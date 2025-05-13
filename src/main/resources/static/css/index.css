@@ -1,0 +1,65 @@
+.hero {
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--blue-light), var(--sky-bg));
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 200%;
+    height: 200%;
+    background: url('/images/clouds.png') repeat-x;
+    background-size: contain;
+    opacity: 0.15;
+    animation: slide 120s linear infinite;
+}
+
+@keyframes slide {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+.hero-card {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(5px);
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+    max-width: 600px;
+    text-align: center;
+}
+
+.btn-cta {
+    background: var(--popcorn);
+    color: var(--blue-dark);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.8rem 1.5rem rgba(0,0,0,0.15);
+}
+
+footer {
+    background: var(--popcorn);
+    color: var(--blue-dark);
+}
+
+footer .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0.5rem 0;
+}
