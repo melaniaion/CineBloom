@@ -1,0 +1,84 @@
+:root {
+    --blue-light: #d8f0ff;
+    --sky-bg: #e0f7ff;
+    --blue-dark: #003b5c;
+    --popcorn: #fcd34d;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    min-height: 100%;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, var(--blue-light), var(--sky-bg));
+}
+
+/* Full page height minus navbar */
+.register-page {
+    min-height: calc(100vh - 56px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated cloud background */
+.register-page::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 200%;
+    height: 200%;
+    background: url('/images/clouds.png') repeat-x;
+    background-size: contain;
+    opacity: 0.1;
+    animation: slide 120s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes slide {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* Registration card styling */
+.register-card {
+    margin-top: 40px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 360px;
+    z-index: 1;
+}
+
+.register-card h2 {
+    color: var(--blue-dark);
+    text-align: center;
+}
+
+.btn-cta {
+    background: var(--popcorn);
+    color: var(--blue-dark);
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.text-danger {
+    font-size: 0.875rem;
+}

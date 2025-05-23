@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <nav th:fragment="siteNavbar" class="navbar navbar-expand-lg fixed-top">
   <div class="container">
     <a class="navbar-brand" th:href="@{/}" th:text="${appName}">CineBloom</a>
@@ -11,14 +12,43 @@
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" th:href="@{/movies}">Movies</a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/my-movies}">My Movies</a></li>
-        <li class="nav-item"><a class="nav-link text-warning" th:href="@{/movies/add}">Add Movie</a></li>
+        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+          <a class="nav-link text-warning" th:href="@{/movies/add}">Add Movie</a>
+        </li>
       </ul>
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" th:href="@{/login}">Login</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/register}">Register</a></li>
+        <li class="nav-item" sec:authorize="isAnonymous()">
+          <a class="nav-link" th:href="@{/login}">Login</a>
+        </li>
+        <li class="nav-item" sec:authorize="isAnonymous()">
+          <a class="nav-link" th:href="@{/register}">Register</a>
+        </li>
+        <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+             id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+             <span class="me-2">
+              <img
+                      th:if="${userId != null}"
+                      th:src="@{/users/{id}/picture(id=${userId})}"
+                      class="rounded-circle"
+                      style="width:32px; height:32px; object-fit:cover;"
+                      alt="User avatar" />
+
+              <i
+                      th:if="${userId == null}"
+                      class="fas fa-user fa-lg"></i>
+            </span>
+            <span sec:authentication="name">User</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+            <li><a class="dropdown-item" th:href="@{/profile}">My Profile</a></li>
+            <li><hr class="dropdown-divider"/></li>
+            <li><a class="dropdown-item" th:href="@{/perform_logout}">Logout</a></li>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
-</body>
 </html>

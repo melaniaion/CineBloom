@@ -21,7 +21,7 @@ public class DataLoader implements CommandLineRunner {
     private void loadUserData() {
         if (userRepository.count() == 0){
             Authority adminRole = authorityRepository.save(Authority.builder().role("ROLE_ADMIN").build());
-            Authority guestRole = authorityRepository.save(Authority.builder().role("ROLE_USER").build());
+            Authority usertRole = authorityRepository.save(Authority.builder().role("ROLE_USER").build());
 
             User admin = User.builder()
                     .username("admin")
@@ -30,15 +30,15 @@ public class DataLoader implements CommandLineRunner {
                     .authority(adminRole)
                     .build();
 
-            User guest = User.builder()
+            User user = User.builder()
                     .username("user")
                     .email("user@test.com")
                     .password(passwordEncoder.encode("user01!"))
-                    .authority(guestRole)
+                    .authority(usertRole)
                     .build();
 
             userRepository.save(admin);
-            userRepository.save(guest);
+            userRepository.save(user);
         }
     }
 

@@ -32,6 +32,7 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/resources/**",
                                 "/login",
+                                "/register",
                                 "/",
                                 "/movies/*"
                         ).permitAll()
@@ -43,6 +44,12 @@ public class SecurityConfig {
                                 .loginPage("/login")
                                 .permitAll()
                                 .loginProcessingUrl("/perform_login")
+                                .defaultSuccessUrl("/", true)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/perform_logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/access_denied"))
                 .httpBasic(Customizer.withDefaults());
