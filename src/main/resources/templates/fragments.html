@@ -13,7 +13,7 @@
         <li class="nav-item"><a class="nav-link" th:href="@{/movies}">Movies</a></li>
         <li class="nav-item"><a class="nav-link" th:href="@{/my-movies}">My Movies</a></li>
         <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-          <a class="nav-link text-warning" th:href="@{/movies/add}">Add Movie</a>
+          <a class="nav-link text-warning" th:href="@{/movies/new}">Add Movie</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">

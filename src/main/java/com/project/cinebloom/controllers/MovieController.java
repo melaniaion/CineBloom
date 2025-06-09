@@ -38,7 +38,7 @@ public class MovieController {
         this.movieRepo = movieRepo;
     }
 
-    @GetMapping("/movies/{id}/poster")
+    @GetMapping("/{id}/poster")
     public ResponseEntity<byte[]> getPoster(@PathVariable Long id) {
         byte[] pic = movieRepo.findById(id)
                 .map(Movie::getPoster)
@@ -64,14 +64,14 @@ public class MovieController {
         return "moviesList";
     }
 
-    @GetMapping("/movies/new")
-    public String showMovieForm(Model model) {
+    @GetMapping("/new")
+    public String addMovie(Model model) {
         model.addAttribute("movie", new MovieFormDTO());
         model.addAttribute("categories", categoryRepo.findAll());
         return "movieForm";
     }
 
-    @PostMapping("/movies/new")
+    @PostMapping("/new")
     public String submitMovieForm(@Valid @ModelAttribute("movie") MovieFormDTO dto,
                                   BindingResult bindingResult,
                                   Model model) {
@@ -82,6 +82,6 @@ public class MovieController {
 
         movieService.createMovie(dto);
 
-        return "redirect:/moviesList";
+        return "redirect:/movies";
     }
 }

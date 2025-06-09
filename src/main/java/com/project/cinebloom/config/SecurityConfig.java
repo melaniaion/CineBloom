@@ -36,6 +36,7 @@ public class SecurityConfig {
                                 "/",
                                 "/movies/*"
                         ).permitAll()
+                        .requestMatchers("/movies/new").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
