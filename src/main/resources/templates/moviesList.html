@@ -1,85 +1,45 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>CineBloom</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title th:text="${appName}">CineBloom</title>
 
-    <script src="/webjars/jquery/3.7.1/jquery.min.js"></script>
-    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.min.css"/>
+    <link th:href="@{/webjars/fontsource__poppins/4.5.1/css/poppins.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/font-awesome/6.5.2/css/all.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/fragments.css}" rel="stylesheet"/>
+    <link th:href="@{/css/moviesList.css}" rel="stylesheet"/>
 </head>
 <body>
-<div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="nav-link" th:href="@{'/'}">
-            <i class="fas fa-home mx-1"></i>
-        </a>
-        <button class="navbar-toggler" type="button"
-                data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ml-auto topnav">
-                <li class="nav-item">
-                    <a class="nav-link active" th:href="@{'/movies'}">Movies</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn-primary" th:href="@{'/books/form'}">
-                        <i class="fas fa-plus-circle"></i> Add
-                    </a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto topnav">
-                <li class="nav-item">
-                    <a class="nav-link btn-primary" th:href="@{'/register'}">
-                        <i class="fas fa-user-plus"></i> Register
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn-primary" th:href="@{'/login'}">
-                        <i class="fas fa-sign-in-alt"></i> Log In
-                    </a>
-                </li>
-            </ul>
+<div th:replace="fragments :: siteNavbar"></div>
+
+<main class="movies-page">
+    <div class="container">
+        <h2 class="text-center fw-semibold mb-4">Explore Movies</h2>
+
+        <div class="row g-4">
+            <div class="col-md-4 col-sm-6" th:each="movie : ${movies}">
+                <div class="movie-card h-100 shadow-sm rounded">
+                    <div class="poster-wrapper">
+                        <img th:src="@{/movies/{id}/poster(id=${movie.id})}" alt="Poster" class="poster-img rounded-top"/>
+                    </div>
+                    <div class="p-3">
+                        <h5 class="mb-1" th:text="${movie.title}">Movie Title</h5>
+                        <span class="badge category-badge mb-2" th:text="${movie.categoryName}">Category</span>
+                        <p class="text-muted small mb-0">
+                            <i class="far fa-calendar-alt me-1"></i>
+                            <span th:text="${movie.releaseDate}">2025-06-14</span>
+                        </p>
+                        <a th:href="@{'/movies/' + ${movie.id}}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </nav>
-</div>
+    </div>
+</main>
 
-<div class="container">
-    <table class="table table-hover">
-        <thead class="thead-inverse">
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Description</th>
-            <th></th>
-            <th></th>
-        </tr>
-        </thead>
-        <tr th:each="movie, stat : ${movies}"
-            th:class="${stat.odd}? 'table-light':''">
-            <td th:text="${movie.id}">1</td>
-            <td th:text="${movie.title}">Book</td>
-            <td th:text="${movie.releaseDate}">Release Date</td>
-            <td th:text="${movie.description}">Description</td>
-            <td>
-                <a th:href="@{'/movies/edit/' + ${movie.id}}">
-                    <i class="fa-solid fa-pen"></i>
-                </a>
-            </td>
-            <td>
-                <a th:href="@{'/movies/delete/' + ${movie.id}}"
-                   onclick="return confirm('Delete this movie?');">
-                    <i class="fa-solid fa-trash"></i>
-                </a>
-            </td>
-        </tr>
-    </table>
-</div>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

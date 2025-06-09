@@ -17,10 +17,10 @@ public class Movie {
 
     @Column(nullable = false)
     private String title;
-
-    private String poster;
-
+    @Lob
+    private byte[] poster;
     private LocalDate releaseDate;
+    private String language;
 
     @Lob
     private String description;
