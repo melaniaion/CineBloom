@@ -31,7 +31,7 @@ public class UserRegistrationDTO {
     @NotBlank(message = "Please confirm your password")
     private String confirmPassword;
 
-    // Optional file upload for profile picture
+    // Optional file upload for profile.html picture
     private MultipartFile profilePicture;
 
     // Optional bio

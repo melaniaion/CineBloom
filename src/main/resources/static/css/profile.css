@@ -1,0 +1,56 @@
+:root {
+    --blue-light: #d8f0ff;
+    --sky-bg: #e0f7ff;
+    --blue-dark: #003b5c;
+    --popcorn: #fcd34d;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, var(--blue-light), var(--sky-bg));
+    overflow-x: hidden;
+}
+
+.profile-page {
+    min-height: calc(100vh - 56px);
+    padding: 3rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-card {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(4px);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--blue-dark);
+    margin-bottom: 1rem;
+}
+
+.btn-cta {
+    background: var(--popcorn);
+    color: var(--blue-dark);
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}

@@ -2,7 +2,9 @@ package com.project.cinebloom.services.security;
 
 import com.project.cinebloom.domain.Authority;
 import com.project.cinebloom.domain.User;
+import com.project.cinebloom.dtos.UserProfileDTO;
 import com.project.cinebloom.dtos.UserRegistrationDTO;
+import com.project.cinebloom.mappers.UserMapper;
 import com.project.cinebloom.repositories.security.AuthorityRepository;
 import com.project.cinebloom.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class UserService {
     private final UserRepository userRepo;
     private final AuthorityRepository authRepo;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     public void register(UserRegistrationDTO dto, BindingResult br) throws IOException {
         if(userRepo.existsByUsername(dto.getUsername()))
@@ -42,6 +45,53 @@ public class UserService {
         Authority userRole = authRepo.findByRole("ROLE_USER");
         user.setAuthorities(Set.of(userRole));
         userRepo.save(user);
+    }
+
+    public UserProfileDTO getProfile(Long userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toDto(user);
+    }
+
+    public void updateProfile(Long userId, UserProfileDTO dto) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (dto.getBio() != null && !dto.getBio().isBlank()) {
+            user.setBio(dto.getBio());
+        }
+
+        if (dto.getProfilePicture() != null && !dto.getProfilePicture().isEmpty()) {
+            try {
+                user.setProfilePicture(dto.getProfilePicture().getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process profile picture");
+            }
+        }
+
+        boolean isChangingPassword =
+                dto.getCurrentPassword() != null && !dto.getCurrentPassword().isBlank() &&
+                        dto.getNewPassword() != null && !dto.getNewPassword().isBlank();
+
+        if (isChangingPassword) {
+            if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("Incorrect current password");
+            }
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        }
+
+        userRepo.save(user);
+    }
+
+    public void deleteAccount(Long userId, String password) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect password");
+        }
+
+        userRepo.delete(user);
     }
 }
 
