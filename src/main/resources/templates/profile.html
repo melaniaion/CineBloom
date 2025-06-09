@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -18,64 +18,77 @@
 <main class="profile-page">
     <div class="container">
         <div class="profile-card mx-auto">
-            <h2 class="text-center mb-4">Manage Profile</h2>
+            <div class="text-center">
+                <img th:src="@{/users/{id}/picture(id=${profile.id})}" class="profile-img-lg" alt="Profile Picture"/>
+                <h2 class="fw-semibold mt-3">Manage Profile</h2>
+            </div>
 
             <!-- Alerts -->
-            <div th:if="${ProfileUpdateSuccess}" class="alert alert-success" th:text="${ProfileUpdateSuccess}"></div>
-            <div th:if="${ProfileUpdateError}" class="alert alert-danger" th:text="${ProfileUpdateError}"></div>
-            <div th:if="${ProfileDeleteError}" class="alert alert-danger" th:text="${ProfileDeleteError}"></div>
-            <div th:if="${ProfileError}" class="alert alert-danger" th:text="${ProfileError}"></div>
+            <div th:if="${ProfileUpdateSuccess}" class="alert alert-success mt-3" th:text="${ProfileUpdateSuccess}"></div>
+            <div th:if="${ProfileUpdateError}" class="alert alert-danger mt-3" th:text="${ProfileUpdateError}"></div>
+            <div th:if="${ProfileDeleteError}" class="alert alert-danger mt-3" th:text="${ProfileDeleteError}"></div>
+            <div th:if="${ProfileError}" class="alert alert-danger mt-3" th:text="${ProfileError}"></div>
 
             <!-- Profile Form -->
             <form th:action="@{/profile}" method="post" th:object="${profile}" enctype="multipart/form-data" autocomplete="off">
-                <div class="text-center mb-3">
-                    <img th:src="@{/users/{id}/picture(id=${profile.id})}" class="rounded-circle profile-img" alt="Profile Picture"/>
+                <div class="rounded p-3 mb-4 section-box">
+                    <h5 class="mb-3 text-secondary">Your Info</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input class="form-control" th:value="${profile.username}" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" th:value="${profile.email}" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio</label>
+                        <textarea th:field="*{bio}" id="bio" class="form-control" rows="3" placeholder="Tell us about yourself"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="profilePicture" class="form-label">Profile Picture</label>
+                        <input type="file" th:field="*{profilePicture}" class="form-control" accept="image/*"/>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Username</label>
-                    <input class="form-control" th:value="${profile.username}" readonly/>
+                <!-- Change Password -->
+                <a class="btn btn-outline-secondary w-100 mb-3" data-bs-toggle="collapse" href="#changePassword">
+                    <i class="fas fa-lock me-2"></i>Change Password
+                </a>
+                <div class="collapse" id="changePassword">
+                    <div class="rounded p-3 mb-4 section-box">
+                        <div class="mb-3">
+                            <input th:field="*{currentPassword}" type="password" class="form-control" placeholder="Current password" autocomplete="new-password"/>
+                        </div>
+                        <div class="mb-3">
+                            <input th:field="*{newPassword}" type="password" class="form-control" placeholder="New password" autocomplete="new-password"/>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input class="form-control" th:value="${profile.email}" readonly/>
-                </div>
-
-                <div class="mb-3">
-                    <label for="bio" class="form-label">Bio</label>
-                    <textarea th:field="*{bio}" id="bio" class="form-control" rows="3" placeholder="Tell us about yourself"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="profilePicture" class="form-label">Profile Picture</label>
-                    <input type="file" th:field="*{profilePicture}" class="form-control" accept="image/*"/>
-                </div>
-
-                <hr class="my-4"/>
-
-                <h5 class="text-muted mb-3">Change Password</h5>
-                <div class="mb-3">
-                    <input th:field="*{currentPassword}" type="password" class="form-control" placeholder="Current password" autocomplete="new-password" />
-                </div>
-                <div class="mb-3">
-                    <input th:field="*{newPassword}" type="password" class="form-control" placeholder="New password" autocomplete="new-password" />
-                </div>
-
-                <button type="submit" class="btn btn-cta w-100 mb-3">
+                <button type="submit" class="btn btn-cta w-100 mb-4">
                     <i class="fas fa-save me-2"></i>Save Changes
                 </button>
             </form>
 
             <!-- Delete Account -->
-            <form th:action="@{/profile/delete}" method="post">
-                <div class="mb-2">
-                    <input name="currentPassword" type="password" class="form-control" placeholder="Confirm password to delete" required/>
-                </div>
-                <button type="submit" class="btn btn-danger w-100">
-                    <i class="fas fa-trash-alt me-2"></i>Delete Account
-                </button>
-            </form>
+            <a class="btn btn-outline-danger w-100 mb-3" data-bs-toggle="collapse" href="#deleteAccount">
+                <i class="fas fa-trash-alt me-2"></i>Delete Account
+            </a>
+            <div class="collapse" id="deleteAccount">
+                <form th:action="@{/profile/delete}" method="post" class="section-box p-3 rounded bg-light-subtle">
+                    <div class="mb-2">
+                        <input name="currentPassword" type="password" class="form-control" placeholder="Confirm password to delete" required />
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="fas fa-exclamation-circle me-2"></i>Confirm Delete
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </main>
