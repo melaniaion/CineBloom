@@ -60,6 +60,7 @@ public class UserController {
         } catch (Exception e) {
             model.addAttribute("ProfileError", e.getMessage());
         }
+        
         return "profile";
     }
 
