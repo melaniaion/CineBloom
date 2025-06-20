@@ -30,6 +30,10 @@ public class MovieFormDTO {
     @NotBlank(message = "Language is required")
     private String language;
 
+    @NotNull(message = "Duration is required")
+    @Min(value = 5, message = "The duration should be at least 5 minutes")
+    private int duration;
+
     @NotNull(message = "Category is required")
     private Long categoryId;
 }

@@ -45,6 +45,12 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="duration" class="form-label">Duration (minutes)</label>
+                    <input th:field="*{duration}" type="number" id="duration" class="form-control" placeholder="e.g. 120" min="1" required />
+                    <div th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}" class="text-danger small"></div>
+                </div>
+
+                <div class="mb-3">
                     <label for="language" class="form-label">Language</label>
                     <input th:field="*{language}" id="language" class="form-control" placeholder="Language" required />
                     <div th:if="${#fields.hasErrors('language')}" th:errors="*{language}" class="text-danger small"></div>
