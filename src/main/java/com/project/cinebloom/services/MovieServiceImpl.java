@@ -1,14 +1,14 @@
 package com.project.cinebloom.services;
 
-import com.project.cinebloom.domain.Category;
-import com.project.cinebloom.domain.Movie;
-import com.project.cinebloom.domain.MovieStats;
+import com.project.cinebloom.domain.*;
 import com.project.cinebloom.dtos.MovieDTO;
 import com.project.cinebloom.dtos.MovieFormDTO;
 import com.project.cinebloom.dtos.MovieSummaryDTO;
+import com.project.cinebloom.dtos.ReviewDTO;
 import com.project.cinebloom.mappers.MovieMapper;
 import com.project.cinebloom.repositories.CategoryRepository;
 import com.project.cinebloom.repositories.MovieRepository;
+import com.project.cinebloom.repositories.UserMovieRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -26,13 +29,16 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepo;
     private final MovieMapper movieMapper;
     private final CategoryRepository categoryRepo;
+    private final UserMovieRepository userMovieRepo;
 
     public MovieServiceImpl(MovieRepository movieRepo,
                             MovieMapper movieMapper,
-                            CategoryRepository categoryRepo) {
+                            CategoryRepository categoryRepo,
+                            UserMovieRepository userMovieRepo) {
         this.movieRepo   = movieRepo;
         this.movieMapper = movieMapper;
         this.categoryRepo = categoryRepo;
+        this.userMovieRepo = userMovieRepo;
     }
 
     @Override
@@ -87,5 +93,47 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public void deleteById(Long id) {
         movieRepo.deleteById(id);
+    }
+
+    @Override
+    public MovieDTO findById(Long movieId, User user) {
+        Movie movie = movieRepo.findById(movieId)
+                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
+
+        WatchStatus status = null;
+        if (user != null) {
+            Optional<UserMovie> userMovieOpt = userMovieRepo.findByUserAndMovie(user, movie);
+            if (userMovieOpt.isPresent()) {
+                status = userMovieOpt.get().getStatus();
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm", Locale.ENGLISH);
+
+        List<ReviewDTO> reviewDTOs = movie.getReviews().stream()
+                .map(review -> ReviewDTO.builder()
+                        .id(review.getId())
+                        .userId(review.getUser().getId())
+                        .username(review.getUser().getUsername())
+                        .value(review.getValue())
+                        .comment(review.getComment())
+                        .createdAt(review.getCreatedAt())
+                        .build())
+                .toList();
+
+        return MovieDTO.builder()
+                .id(movie.getId())
+                .title(movie.getTitle())
+                .poster(movie.getPoster())
+                .releaseDate(movie.getReleaseDate())
+                .description(movie.getDescription())
+                .duration(movie.getDuration())
+                .language(movie.getLanguage())
+                .categoryName(movie.getCategory().getName())
+                .totalFavorites(movie.getStats().getTotalFavorites())
+                .totalReviews(movie.getStats().getTotalReviews())
+                .userWatchStatus(status)
+                .reviews(reviewDTOs)
+                .build();
     }
 }

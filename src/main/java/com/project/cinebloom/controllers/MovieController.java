@@ -1,10 +1,15 @@
 package com.project.cinebloom.controllers;
 
+import com.project.cinebloom.domain.User;
+import com.project.cinebloom.domain.WatchStatus;
+import com.project.cinebloom.dtos.MovieDTO;
 import com.project.cinebloom.dtos.MovieFormDTO;
 import com.project.cinebloom.domain.Movie;
 import com.project.cinebloom.dtos.MovieSummaryDTO;
+import com.project.cinebloom.dtos.ReviewFormDTO;
 import com.project.cinebloom.repositories.CategoryRepository;
 import com.project.cinebloom.repositories.MovieRepository;
+import com.project.cinebloom.repositories.security.UserRepository;
 import com.project.cinebloom.services.MovieService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -12,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -27,16 +34,19 @@ public class MovieController {
     MovieService movieService;
     CategoryRepository categoryRepo;
     MovieRepository movieRepo;
+    UserRepository userRepo;
     @Value("classpath:/static/images/default-movie.jpg")
     private Resource defaultPosterImage;
 
 
     public MovieController(MovieService movieService,
                            CategoryRepository categoryRepo,
-                           MovieRepository movieRepo) {
+                           MovieRepository movieRepo,
+                           UserRepository userRepo) {
         this.movieService = movieService;
         this.categoryRepo = categoryRepo;
         this.movieRepo = movieRepo;
+        this.userRepo = userRepo;
     }
 
     @GetMapping("/{id}/poster")
@@ -108,5 +118,33 @@ public class MovieController {
         movieService.createMovie(dto);
 
         return "redirect:/movies";
+    }
+
+    @GetMapping("/{id}")
+    public String movieDetails(@PathVariable Long id,
+                               Principal principal,
+                               @RequestParam(required = false) String error,
+                               Model model) {
+
+        User user = null;
+        if (principal != null) {
+            user = userRepo.findByUsername(principal.getName())
+                    .orElse(null);
+        }
+
+        MovieDTO movie = movieService.findById(id, user);
+
+        model.addAttribute("movie", movie);
+        model.addAttribute("statuses", WatchStatus.values());
+        model.addAttribute("reviewForm", new ReviewFormDTO());
+
+        // Handle optional error message (from redirect)
+        if ("form".equals(error)) {
+            model.addAttribute("reviewError", "Please correct the review form.");
+        } else if ("duplicate".equals(error)) {
+            model.addAttribute("reviewError", "You have already reviewed this movie.");
+        }
+
+        return "movieDetails";
     }
 }

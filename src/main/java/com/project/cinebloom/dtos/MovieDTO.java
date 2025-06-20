@@ -1,30 +1,29 @@
 package com.project.cinebloom.dtos;
 
-import com.project.cinebloom.domain.Category;
-import com.project.cinebloom.domain.MovieStats;
-import com.project.cinebloom.domain.Review;
-import com.project.cinebloom.domain.UserMovie;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import com.project.cinebloom.domain.WatchStatus;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Setter
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MovieDTO {
     private Long id;
     private String title;
-    private String poster;
+    private byte[] poster;
     private LocalDate releaseDate;
     private String description;
     private int duration;
-    private List<UserMovie> userMovies;
-    private List<Review> reviews;
-    private Category category;
-    private MovieStats stats;
+    private String language;
+    private String categoryName;
+
+    private int totalFavorites;
+    private int totalReviews;
+    private WatchStatus userWatchStatus;
+    private List<ReviewDTO> reviews;
 }
