@@ -7,6 +7,7 @@ import com.project.cinebloom.repositories.CategoryRepository;
 import com.project.cinebloom.repositories.MovieRepository;
 import com.project.cinebloom.services.MovieService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -57,10 +58,34 @@ public class MovieController {
                 .body(pic);
     }
 
-    @GetMapping("")
-    public String movieList(Model model) {
-        List<MovieSummaryDTO> movies = movieService.findAll();
-        model.addAttribute("movies", movies);
+    @GetMapping
+    public String movieList(@RequestParam(defaultValue = "") String title,
+                            @RequestParam(required = false) Long categoryId,
+                            @RequestParam(defaultValue = "title_asc") String sortOption,
+                            @RequestParam(defaultValue = "0") int page,
+                            Model model) {
+
+        int size = 6;
+
+        String[] parts = sortOption.split("_");
+        String sort = parts[0];
+        String dir = parts[1];
+
+        Page<MovieSummaryDTO> moviePage = movieService.findFiltered(title, categoryId, sort, dir, page, size);
+
+        model.addAttribute("movies", moviePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", moviePage.getTotalPages());
+        model.addAttribute("hasNext", moviePage.hasNext());
+        model.addAttribute("hasPrevious", moviePage.hasPrevious());
+
+        model.addAttribute("title", title);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("sort", sort);
+        model.addAttribute("dir", dir);
+        model.addAttribute("sortOption", sortOption);
+        model.addAttribute("categories", categoryRepo.findAll());
+
         return "moviesList";
     }
 

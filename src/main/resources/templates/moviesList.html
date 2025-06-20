@@ -20,6 +20,39 @@
     <div class="container justify-content-center">
         <h2 class="text-center display-6 fw-bold mb-5">🍿 Explore Movies</h2>
 
+        <form th:action="@{/movies}" method="get" class="filter-form">
+            <div class="search-wrapper">
+                <input type="text" name="title" placeholder="🔍 Search movies..."
+                       th:value="${title}" class="search-bar"/>
+            </div>
+
+            <div class="filter-group">
+                <select name="categoryId" class="filter-select">
+                    <option value="">All Categories</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.id}"
+                            th:selected="${cat.id == categoryId}"
+                            th:text="${cat.name}"></option>
+                </select>
+
+                <select name="sortOption" class="filter-select">
+                    <option value="title_asc" th:selected="${sort == 'title' and dir == 'asc'}">Title A–Z</option>
+                    <option value="title_desc" th:selected="${sort == 'title' and dir == 'desc'}">Title Z–A</option>
+                    <option value="releaseDate_asc" th:selected="${sort == 'releaseDate' and dir == 'asc'}">Oldest First</option>
+                    <option value="releaseDate_desc" th:selected="${sort == 'releaseDate' and dir == 'desc'}">Newest First</option>
+                </select>
+
+                <button type="submit" class="filter-btn">
+                    <i class="fas fa-sliders-h me-1"></i> Apply
+                </button>
+            </div>
+        </form>
+
+        <div th:if="${#lists.isEmpty(movies)}" class="no-movies-msg text-center text-muted mb-5">
+            <i class="fas fa-film fa-2x d-block mb-3"></i>
+            <h5>No movies found matching your criteria.</h5>
+        </div>
+
         <div class="row g-4">
             <div class="col-lg-4 col-md-6" th:each="movie : ${movies}">
                 <div class="movie-card shadow-sm">
@@ -48,6 +81,25 @@
                 </div>
             </div>
         </div>
+        <nav class="d-flex justify-content-center mt-5">
+            <ul class="pagination pagination-sm">
+                <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled'">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage - 1}, title=${title}, categoryId=${categoryId}, sortOption=${sortOption})}">«</a>
+                </li>
+
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/movies(page=${i}, title=${title}, categoryId=${categoryId}, sortOption=${sortOption})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+
+                <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage + 1}, title=${title}, categoryId=${categoryId}, sortOption=${sortOption})}">»</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </main>
 

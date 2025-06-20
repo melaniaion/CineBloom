@@ -9,6 +9,10 @@ import com.project.cinebloom.dtos.MovieSummaryDTO;
 import com.project.cinebloom.mappers.MovieMapper;
 import com.project.cinebloom.repositories.CategoryRepository;
 import com.project.cinebloom.repositories.MovieRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,9 +36,26 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<MovieSummaryDTO> findAll() {
-        List<Movie> movies = movieRepo.findAll();
-        return movieMapper.toSummaryDtoList(movies);
+    public Page<MovieSummaryDTO> findPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("title").ascending());
+        Page<Movie> moviePage = movieRepo.findAll(pageable);
+        return moviePage.map(movieMapper::toSummaryDto);
+    }
+
+    @Override
+    public Page<MovieSummaryDTO> findFiltered(String title, Long categoryId, String sortField, String sortDir, int page, int size) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+
+        Page<Movie> moviePage;
+
+        if (categoryId != null) {
+            moviePage = movieRepo.findByTitleContainingIgnoreCaseAndCategory_Id(title, categoryId, pageable);
+        } else {
+            moviePage = movieRepo.findByTitleContainingIgnoreCase(title, pageable);
+        }
+
+        return moviePage.map(movieMapper::toSummaryDto);
     }
 
     @Override

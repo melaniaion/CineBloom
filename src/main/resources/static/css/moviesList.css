@@ -116,3 +116,111 @@ body {
     left: 0;
     z-index: 1;
 }
+
+.page-link {
+    background-color: #2a2a2a;
+    color: var(--text-light);
+    border: 1px solid #444;
+}
+
+.page-item.active .page-link {
+    background-color: #ffe066;
+    border-color: #ffe066;
+    color: #fff;
+}
+
+.page-item.disabled .page-link {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.search-wrapper {
+    width: 100%;
+    max-width: 600px;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 0.75rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-light);
+    backdrop-filter: blur(4px);
+    outline: none;
+    transition: 0.3s ease;
+}
+
+.search-bar::placeholder {
+    color: #aaa;
+}
+
+.search-bar:focus {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 0 3px rgba(77, 255, 255, 0.2);
+}
+
+
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.filter-select {
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    border: none;
+    background: #2a2a2a;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    min-width: 160px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+    border: 1px solid var(--neon-blue);
+    outline: none;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background-color: var(--neon-pink);
+    color: #fff;
+    border: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #ff267e;
+}
+
+.search-input {
+    min-width: 240px;
+}
+
+.no-movies-msg {
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+    color: #ccc;
+}
+
