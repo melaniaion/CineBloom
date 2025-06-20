@@ -24,6 +24,7 @@ public class Movie {
 
     @Lob
     private String description;
+    private int duration;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserMovie> userMovies;

@@ -22,6 +22,7 @@ public class MovieDTO {
     private String poster;
     private LocalDate releaseDate;
     private String description;
+    private int duration;
     private List<UserMovie> userMovies;
     private List<Review> reviews;
     private Category category;

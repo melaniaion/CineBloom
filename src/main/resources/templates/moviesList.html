@@ -15,25 +15,36 @@
 
 <div th:replace="fragments :: siteNavbar"></div>
 
+
 <main class="movies-page">
     <div class="container">
-        <h2 class="text-center fw-semibold mb-4">Explore Movies</h2>
+        <h2 class="text-center display-6 fw-bold mb-5">🍿 Explore Movies</h2>
 
-        <div class="row g-4">
-            <div class="col-md-4 col-sm-6" th:each="movie : ${movies}">
-                <div class="movie-card h-100 shadow-sm rounded">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-4 col-md-6" th:each="movie : ${movies}">
+                <div class="movie-card shadow-sm">
                     <div class="poster-wrapper">
-                        <img th:src="@{/movies/{id}/poster(id=${movie.id})}" alt="Poster" class="poster-img rounded-top"/>
+                        <img th:src="@{/movies/{id}/poster(id=${movie.id})}" alt="Poster" class="poster-img" />
                     </div>
-                    <div class="p-3">
-                        <h5 class="mb-1" th:text="${movie.title}">Movie Title</h5>
-                        <span class="badge category-badge mb-2" th:text="${movie.categoryName}">Category</span>
-                        <p class="text-muted small mb-0">
+
+                    <div class="movie-info">
+                        <h5 class="movie-title mb-2" th:text="${movie.title}">Movie Title</h5>
+
+                        <div class="mb-2">
+                            <span class="badge category-badge" th:classappend="' genre-' + ${movie.categoryName.toLowerCase()}">
+                                <i class="fas fa-film me-1"></i>
+                                <span th:text="${movie.categoryName}">Genre</span>
+                            </span>
+                        </div>
+
+                        <div class="movie-meta">
                             <i class="far fa-calendar-alt me-1"></i>
-                            <span th:text="${movie.releaseDate}">2025-06-14</span>
-                        </p>
-                        <a th:href="@{'/movies/' + ${movie.id}}" class="stretched-link"></a>
+                            <span class="label">Release:</span>
+                            <span class="value" th:text="${movie.releaseDate}">2025-06-14</span>
+                        </div>
                     </div>
+
+                    <a th:href="@{'/movies/' + ${movie.id}}" class="stretched-link"></a>
                 </div>
             </div>
         </div>
