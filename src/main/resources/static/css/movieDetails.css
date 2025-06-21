@@ -49,6 +49,37 @@ body {
     border-radius: 0.75rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
+.review-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.edit-form {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+}
+.btn-cta {
+    background: var(--popcorn);
+    color: var(--blue-dark);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-cta:hover {
+    background: #fcd34d;
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+}
+.alert-success {
+    background-color: #e8f7e4;
+    color: #2e7d32;
+    border: 1px solid #c9e2c4;
+    border-radius: 0.5rem;
+}
+
 
 .genre-badge {
     border-radius: 1rem;

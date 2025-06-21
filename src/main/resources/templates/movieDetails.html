@@ -64,7 +64,9 @@
   <div class="reviews-section">
     <h4 class="mb-3">Reviews <small class="text-muted" th:text="'(' + ${movie.totalReviews} + ')'"> (10) </small></h4>
 
-    <div th:if="${reviewError}" class="alert alert-danger" th:text="${reviewError}"></div>
+    <div th:if="${reviewError}" class="alert alert-danger fade-alert" th:text="${reviewError}"></div>
+    <div th:if="${reviewSuccess}" class="alert alert-success fade-alert" th:text="${reviewSuccess}"></div>
+
 
     <!-- Add Review -->
     <form th:action="@{'/reviews/movie/' + ${movie.id}}" th:object="${reviewForm}" method="post" class="mb-4">
@@ -83,25 +85,81 @@
     </form>
 
     <!-- Review List -->
-    <div class="review-list">
-      <div class="review mb-4 pb-3 border-bottom" th:each="review : ${movie.reviews}">
-        <div class="d-flex align-items-center mb-1">
+    <div class="review mb-4 pb-3 border-bottom" th:each="review : ${movie.reviews}">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
           <strong th:text="${review.username}">User</strong>
-          <span class="text-muted small ms-2" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy HH:mm')}">07 Jul 2025 18:42</span>
+          <span class="text-muted small ms-2" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
         </div>
-        <div class="mb-1">
-          <span th:each="i : ${#numbers.sequence(1, 5)}">
-            <i th:class="${i <= review.value} ? 'fas fa-star text-warning' : 'far fa-star text-secondary'"></i>
-          </span>
+
+        <div th:if="${review.userId == userId}" class="review-actions ms-auto">
+          <button type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  data-bs-toggle="collapse"
+                  th:attr="data-bs-target='#edit-review-' + ${review.id}">
+            <i class="fas fa-pen"></i>
+          </button>
+          <form th:action="@{'/reviews/delete/' + ${review.id}}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </form>
         </div>
-        <p th:if="${review.comment != null and !review.comment.isEmpty()}"
-           th:text="${review.comment}" class="mb-0">
-          Review comment
-        </p>
+      </div>
+
+      <div class="mb-1">
+    <span th:each="i : ${#numbers.sequence(1, 5)}">
+      <i th:class="${i <= review.value} ? 'fas fa-star text-warning' : 'far fa-star text-secondary'"></i>
+    </span>
+      </div>
+
+      <p th:if="${review.comment != null and !review.comment.isEmpty()}"
+         th:text="${review.comment}" class="mb-2">
+        Review comment
+      </p>
+
+      <!-- Hidden Edit Form -->
+      <div class="collapse mt-2" th:id="'edit-review-' + ${review.id}">
+        <form th:action="@{/reviews/edit}" method="post" class="edit-form p-3 rounded bg-light">
+          <input type="hidden" name="id" th:value="${review.id}" />
+
+          <div class="d-flex align-items-center mb-2">
+            <label class="me-2">Rating:</label>
+            <select name="value" class="form-select w-auto form-select-sm">
+              <option th:each="i : ${#numbers.sequence(1, 5)}"
+                      th:value="${i}"
+                      th:selected="${i == review.value}"
+                      th:text="${'★'.repeat(i)}">
+              </option>
+            </select>
+          </div>
+
+          <textarea name="comment" rows="2" class="form-control form-control-sm mb-2"
+                    th:text="${review.comment}" placeholder="Edit your comment..."></textarea>
+
+          <button type="submit" class="btn btn-sm btn-cta">
+            <i class="fas fa-save me-1"></i>Save
+          </button>
+        </form>
       </div>
     </div>
   </div>
 </main>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const alerts = document.querySelectorAll('.fade-alert');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        alert.style.transition = "opacity 0.5s ease";
+        alert.style.opacity = "0";
+        setTimeout(() => alert.remove(), 500);
+      }, 5000);
+    });
+  });
+</script>
+
 
 </body>
 </html>

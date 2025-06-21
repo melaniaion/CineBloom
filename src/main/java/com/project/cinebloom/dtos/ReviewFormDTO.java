@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ReviewFormDTO {
+    private Long id;
     @Min(1)
     @Max(5)
     private int value;

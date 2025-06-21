@@ -2,6 +2,7 @@ package com.project.cinebloom.controllers;
 
 import com.project.cinebloom.domain.*;
 import com.project.cinebloom.repositories.MovieRepository;
+import com.project.cinebloom.repositories.MovieStatsRepository;
 import com.project.cinebloom.repositories.UserMovieRepository;
 import com.project.cinebloom.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class WatchListController {
     private final UserRepository userRepo;
     private final MovieRepository movieRepo;
     private final UserMovieRepository userMovieRepo;
+    private final MovieStatsRepository statsRepo;
 
     @PostMapping
     public String addToWatchlist(@RequestParam Long movieId,
@@ -35,8 +37,8 @@ public class WatchListController {
         Movie movie = movieRepo.findById(movieId)
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
 
-        // Prevent duplicates
         boolean alreadyExists = userMovieRepo.findByUserAndMovie(user, movie).isPresent();
+
         if (!alreadyExists) {
             UserMovie userMovie = UserMovie.builder()
                     .user(user)
@@ -47,10 +49,9 @@ public class WatchListController {
 
             userMovieRepo.save(userMovie);
 
-            // Update favorites count
             MovieStats stats = movie.getStats();
             stats.setTotalFavorites(stats.getTotalFavorites() + 1);
-            movie.getStats().setTotalFavorites(stats.getTotalFavorites());
+            statsRepo.save(stats);
         }
 
         return "redirect:/movies/" + movieId;
