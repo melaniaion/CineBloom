@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>My Movies - [[${selectedStatus}]]</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4" th:text="'My Movies - ' + ${selectedStatus.description}">My Movies</h2>
+
+  <!-- Sort Options -->
+  <form method="get" th:action="@{'/my-movies/' + ${selectedStatus}}">
+    <input type="hidden" name="page" value="0"/>
+    <select name="sort" class="form-select w-auto d-inline" onchange="this.form.submit()">
+      <option value="desc" th:selected="${sortOrder == 'desc'}">Newest First</option>
+      <option value="asc" th:selected="${sortOrder == 'asc'}">Oldest First</option>
+    </select>
+  </form>
+
+  <!-- Flash Messages -->
+  <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+
+  <!-- Movie Cards -->
+  <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+    <div class="col" th:each="movie : ${movies}">
+      <div class="card h-100 shadow">
+        <img th:src="@{/movies/{id}/poster(id=${movie.id})}" class="card-img-top" alt="Poster"/>
+
+        <div class="card-body">
+          <h5 class="card-title" th:text="${movie.title}">Movie Title</h5>
+          <p class="card-text" th:text="${movie.categoryName}">Category</p>
+          <p class="card-text text-muted">
+            <small th:text="${movie.releaseDate}">2024-01-01</small>
+          </p>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+          <!-- Remove Button -->
+          <form method="post" th:action="@{/my-movies/remove}" th:object="${movie}">
+            <input type="hidden" name="movieId" th:value="${movie.id}"/>
+            <input type="hidden" name="status" th:value="${selectedStatus}"/>
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+
+          <!-- Move Dropdown -->
+          <form method="post" th:action="@{/my-movies/move}">
+            <input type="hidden" name="movieId" th:value="${movie.id}"/>
+            <select name="newStatus" class="form-select form-select-sm w-auto d-inline">
+              <option th:each="s : ${T(com.project.cinebloom.domain.WatchStatus).values()}"
+                      th:value="${s}"
+                      th:text="${s.description}"
+                      th:if="${s != selectedStatus}">
+              </option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary btn-sm mt-2">Move</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="mt-4 d-flex justify-content-center">
+    <nav th:if="${totalPages > 1}">
+      <ul class="pagination">
+        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+          <a class="page-link" th:href="@{|/my-movies/${selectedStatus}?page=${currentPage - 1}&sort=${sortOrder}|}">Previous</a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+            th:classappend="${i == currentPage} ? 'active'">
+          <a class="page-link" th:href="@{|/my-movies/${selectedStatus}?page=${i}&sort=${sortOrder}|}"
+             th:text="${i + 1}">1</a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+          <a class="page-link" th:href="@{|/my-movies/${selectedStatus}?page=${currentPage + 1}&sort=${sortOrder}|}">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Flash Message -->
+  <div class="alert alert-success mt-3" th:if="${successMessage}" th:text="${successMessage}"></div>
+</div>
+</body>
+</html>
