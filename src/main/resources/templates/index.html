@@ -13,14 +13,16 @@
 </head>
 <body>
 <div th:replace="fragments :: siteNavbar"></div>
-<header class="hero d-flex align-items-center justify-content-center">
+<main class="hero d-flex align-items-center justify-content-center">
   <div class="hero-card text-center">
     <h1 class="display-4 fw-bold" th:text="${tagline}">Discover and track your favorite movies</h1>
     <p class="lead mb-4">Welcome to CineBloom—your personal cinema companion.</p>
     <a class="btn btn-cta" th:href="@{/movies}"><i class="fas fa-film me-2"></i>Browse Movies</a>
   </div>
-</header>
-
+</main>
+<footer>
+  <div class="container text-center py-2">&copy; 2025 CineBloom</div>
+</footer>
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
