@@ -1,87 +1,100 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <title>My Movies - [[${selectedStatus}]]</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <meta charset="UTF-8">
+  <title>My Watchlist</title>
+  <link th:href="@{/webjars/fontsource__poppins/4.5.1/css/poppins.css}" rel="stylesheet"/>
+  <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet"/>
+  <link th:href="@{/webjars/font-awesome/6.5.2/css/all.min.css}" rel="stylesheet"/>
+  <link th:href="@{/css/myWatchList.css}" rel="stylesheet"/>
 </head>
 <body>
-<div class="container mt-5">
-  <h2 class="mb-4" th:text="'My Movies - ' + ${selectedStatus.description}">My Movies</h2>
 
-  <!-- Sort Options -->
-  <form method="get" th:action="@{'/my-movies/' + ${selectedStatus}}">
-    <input type="hidden" name="page" value="0"/>
-    <select name="sort" class="form-select w-auto d-inline" onchange="this.form.submit()">
-      <option value="desc" th:selected="${sortOrder == 'desc'}">Newest First</option>
-      <option value="asc" th:selected="${sortOrder == 'asc'}">Oldest First</option>
-    </select>
-  </form>
+<div th:replace="fragments :: siteNavbar"></div>
 
-  <!-- Flash Messages -->
-  <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-  <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+<div class="container my-5">
+  <h2 class="text-center fw-bold mb-4" th:text="'My Watchlist - ' + ${selectedStatus.description}">My Watchlist</h2>
 
+  <!-- Sorting -->
+  <div class="d-flex justify-content-end mb-3">
+    <form method="get" th:action="@{'/my-movies/' + ${selectedStatus}}">
+      <select name="sort" class="form-select form-select-sm sort-dropdown" onchange="this.form.submit()">
+        <option value="desc" th:selected="${sortOrder == 'desc'}">Newest First</option>
+        <option value="asc" th:selected="${sortOrder == 'asc'}">Oldest First</option>
+      </select>
+    </form>
+  </div>
+
+  <!-- Alerts -->
+  <div th:if="${successMessage}" class="alert alert-success fade-alert" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" class="alert alert-danger fade-alert" th:text="${errorMessage}"></div>
+
+  <!-- Empty Message -->
+  <div th:if="${#lists.isEmpty(movies)}" class="text-center text-muted mt-5">
+    <i class="fas fa-film fa-2x mb-2"></i>
+    <p>No movies in this list yet.</p>
+  </div>
 
   <!-- Movie Cards -->
-  <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+  <div class="row row-cols-1 row-cols-md-3 g-4" th:if="${!#lists.isEmpty(movies)}">
     <div class="col" th:each="movie : ${movies}">
-      <div class="card h-100 shadow">
-        <img th:src="@{/movies/{id}/poster(id=${movie.id})}" class="card-img-top" alt="Poster"/>
-
+      <div class="card movie-card h-100 shadow-sm">
+        <a th:href="@{'/movies/' + ${movie.id}}">
+          <img th:src="@{/movies/{id}/poster(id=${movie.id})}" class="poster-img" alt="Poster">
+        </a>
         <div class="card-body">
           <h5 class="card-title" th:text="${movie.title}">Movie Title</h5>
-          <p class="card-text" th:text="${movie.categoryName}">Category</p>
-          <p class="card-text text-muted">
-            <small th:text="${movie.releaseDate}">2024-01-01</small>
+          <span class="badge genre-badge mb-2"
+                th:classappend="'genre-' + ${movie.categoryName.toLowerCase()}">
+            <span th:text="${movie.categoryName}">Genre</span>
+          </span>
+          <p class="card-text text-muted mb-0">
+            <i class="fas fa-calendar-alt me-1"></i>
+            <strong>Release:</strong> <span th:text="${movie.releaseDate}">2025-01-01</span>
           </p>
         </div>
-
-        <div class="card-footer d-flex justify-content-between">
+        <div class="card-footer d-flex justify-content-between align-items-center gap-2">
           <!-- Remove Button -->
-          <form method="post" th:action="@{/my-movies/remove}" th:object="${movie}">
-            <input type="hidden" name="movieId" th:value="${movie.id}"/>
-            <input type="hidden" name="status" th:value="${selectedStatus}"/>
-            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          <form method="post" th:action="@{/my-movies/remove}" class="flex-grow-1">
+            <input type="hidden" name="movieId" th:value="${movie.id}">
+            <input type="hidden" name="status" th:value="${selectedStatus}">
+            <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+              <i class="fas fa-times me-1"></i>Remove
+            </button>
           </form>
 
           <!-- Move Dropdown -->
-          <form method="post" th:action="@{/my-movies/move}">
-            <input type="hidden" name="movieId" th:value="${movie.id}"/>
-            <select name="newStatus" class="form-select form-select-sm w-auto d-inline">
+          <form method="post" th:action="@{/my-movies/move}" class="d-flex align-items-center gap-1">
+            <input type="hidden" name="movieId" th:value="${movie.id}">
+            <select name="newStatus" class="form-select form-select-sm">
               <option th:each="s : ${T(com.project.cinebloom.domain.WatchStatus).values()}"
+                      th:if="${s != selectedStatus}"
                       th:value="${s}"
-                      th:text="${s.description}"
-                      th:if="${s != selectedStatus}">
+                      th:text="${s.description}">
               </option>
             </select>
-            <button type="submit" class="btn btn-outline-primary btn-sm mt-2">Move</button>
+            <button type="submit" class="btn btn-sm btn-outline-secondary">
+              <i class="fas fa-retweet"></i>
+            </button>
           </form>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Pagination -->
-  <div class="mt-4 d-flex justify-content-center">
-    <nav th:if="${totalPages > 1}">
-      <ul class="pagination">
-        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-          <a class="page-link" th:href="@{|/my-movies/${selectedStatus}?page=${currentPage - 1}&sort=${sortOrder}|}">Previous</a>
-        </li>
-        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-            th:classappend="${i == currentPage} ? 'active'">
-          <a class="page-link" th:href="@{|/my-movies/${selectedStatus}?page=${i}&sort=${sortOrder}|}"
-             th:text="${i + 1}">1</a>
-        </li>
-        <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-          <a class="page-link" th:href="@{|/my-movies/${selectedStatus}?page=${currentPage + 1}&sort=${sortOrder}|}">Next</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-
-  <!-- Flash Message -->
-  <div class="alert alert-success mt-3" th:if="${successMessage}" th:text="${successMessage}"></div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.fade-alert').forEach(alert => {
+      setTimeout(() => {
+        alert.style.transition = "opacity 0.5s ease";
+        alert.style.opacity = "0";
+        setTimeout(() => alert.remove(), 500);
+      }, 5000);
+    });
+  });
+</script>
+
 </body>
 </html>
