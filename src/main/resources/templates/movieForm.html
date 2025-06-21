@@ -40,13 +40,18 @@
 
                 <div class="mb-3">
                     <label for="releaseDate" class="form-label">Release Date</label>
-                    <input th:field="*{releaseDate}" type="date" id="releaseDate" class="form-control" required />
+                    <input type="date"
+                           id="releaseDate"
+                           name="releaseDate"
+                           class="form-control"
+                           th:value="${movie.releaseDate != null ? #temporals.format(movie.releaseDate, 'yyyy-MM-dd') : ''}"
+                           required />
                     <div th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}" class="text-danger small"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="duration" class="form-label">Duration (minutes)</label>
-                    <input th:field="*{duration}" type="number" id="duration" class="form-control" placeholder="e.g. 120" min="1" required />
+                    <input th:field="*{duration}" type="number" id="duration" class="form-control" placeholder="e.g. 120" required />
                     <div th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}" class="text-danger small"></div>
                 </div>
 

@@ -168,7 +168,7 @@ public class MovieController {
         MovieFormDTO dto = movieService.getMovieFormById(id);
         model.addAttribute("movie", dto);
         model.addAttribute("categories", categoryRepo.findAll());
-        return "movieForm";
+        return "editMovie";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -179,7 +179,7 @@ public class MovieController {
                               RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("categories", categoryRepo.findAll());
-            return "movieForm";
+            return "editMovie";
         }
 
         movieService.updateMovie(dto);

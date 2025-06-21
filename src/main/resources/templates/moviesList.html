@@ -20,7 +20,7 @@
     <div class="container justify-content-center">
         <h2 class="text-center display-6 fw-bold mb-5">🍿 Explore Movies</h2>
 
-        <div th:if="${successMovie}" class="alert alert-danger fade-alert" th:text="${successMovie}"></div>
+        <div th:if="${successMovie}" class="alert alert-success fade-alert" th:text="${successMovie}"></div>
 
         <form th:action="@{/movies}" method="get" class="filter-form">
             <div class="search-wrapper">
