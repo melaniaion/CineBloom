@@ -33,12 +33,6 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
 }
-
-.movie-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-}
-
 .poster-wrapper {
     width: 100%;
     aspect-ratio: 2/3;
@@ -53,6 +47,34 @@ body {
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.stretched-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 50px);
+    z-index: 1;
+}
+
+.admin-actions {
+    position: relative;
+    z-index: 2;
+    border-top: 1px dashed #444;
+    background-color: #121212;
+    padding-bottom: 0.75rem;
+}
+
+.btn-outline-primary,
+.btn-outline-danger {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
 }
 
 .movie-card:hover .poster-img {
@@ -106,15 +128,6 @@ body {
 
 .movie-meta i {
     color: var(--neon-blue);
-}
-
-.stretched-link {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1;
 }
 
 .page-link {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -19,6 +19,8 @@
 <main class="movies-page">
     <div class="container justify-content-center">
         <h2 class="text-center display-6 fw-bold mb-5">🍿 Explore Movies</h2>
+
+        <div th:if="${successMovie}" class="alert alert-danger fade-alert" th:text="${successMovie}"></div>
 
         <form th:action="@{/movies}" method="get" class="filter-form">
             <div class="search-wrapper">
@@ -55,19 +57,21 @@
 
         <div class="row g-4">
             <div class="col-lg-4 col-md-6" th:each="movie : ${movies}">
-                <div class="movie-card shadow-sm">
+                <div class="movie-card shadow-sm position-relative">
+                    <a th:href="@{'/movies/' + ${movie.id}}" class="stretched-link"></a>
+
                     <div class="poster-wrapper">
                         <img th:src="@{/movies/{id}/poster(id=${movie.id})}" alt="Poster" class="poster-img" />
                     </div>
 
-                    <div class="movie-info">
+                    <div class="movie-info p-3 pb-2">
                         <h5 class="movie-title mb-2" th:text="${movie.title}">Movie Title</h5>
 
                         <div class="mb-2">
-                            <span class="badge category-badge" th:classappend="' genre-' + ${movie.categoryName.toLowerCase()}">
-                                <i class="fas fa-film me-1"></i>
-                                <span th:text="${movie.categoryName}">Genre</span>
-                            </span>
+                          <span class="badge category-badge" th:classappend="' genre-' + ${movie.categoryName.toLowerCase()}">
+                            <i class="fas fa-film me-1"></i>
+                            <span th:text="${movie.categoryName}">Genre</span>
+                          </span>
                         </div>
 
                         <div class="movie-meta">
@@ -77,7 +81,19 @@
                         </div>
                     </div>
 
-                    <a th:href="@{'/movies/' + ${movie.id}}" class="stretched-link"></a>
+                    <!-- Admin Actions -->
+                    <div class="admin-actions d-flex justify-content-between px-3 py-2"
+                         sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{'/movies/edit/' + ${movie.id}}" class="btn btn-sm btn-outline-primary z-2">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </a>
+                        <form th:action="@{/movies/delete}" method="post" class="d-inline z-2">
+                            <input type="hidden" name="id" th:value="${movie.id}" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash-alt me-1"></i> Delete
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -104,5 +120,17 @@
 </main>
 
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const alerts = document.querySelectorAll('.fade-alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
+            }, 5000);
+        });
+    });
+</script>
 </body>
 </html>
