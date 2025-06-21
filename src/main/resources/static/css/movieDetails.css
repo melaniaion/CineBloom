@@ -114,3 +114,14 @@ body {
     background: var(--genre-action);
     color: #fff;
 }
+.status-link {
+    text-decoration: underline dotted;
+    transition: all 0.2s ease;
+}
+
+.status-link:hover {
+    color: #155724;
+    text-decoration-style: solid;
+    text-decoration-color: #155724;
+}
+

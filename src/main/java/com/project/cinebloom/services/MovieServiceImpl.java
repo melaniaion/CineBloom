@@ -136,4 +136,36 @@ public class MovieServiceImpl implements MovieService {
                 .reviews(reviewDTOs)
                 .build();
     }
+
+    @Override
+    public MovieFormDTO getMovieFormById(Long id) {
+        Movie movie = movieRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Movie not found"));
+        return movieMapper.toFormDto(movie);
+    }
+
+    @Override
+    public void updateMovie(MovieFormDTO dto) {
+        Movie movie = movieRepo.findById(dto.getId())
+                .orElseThrow(() -> new RuntimeException("Movie not found"));
+
+        movie.setTitle(dto.getTitle());
+        movie.setLanguage(dto.getLanguage());
+        movie.setDuration(dto.getDuration());
+        movie.setReleaseDate(dto.getReleaseDate());
+        movie.setDescription(dto.getDescription());
+
+        Category category = categoryRepo.findById(dto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Invalid category"));
+        movie.setCategory(category);
+
+        if (dto.getPoster() != null && !dto.getPoster().isEmpty()) {
+            try {
+                movie.setPoster(dto.getPoster().getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to read poster file", e);
+            }
+        }
+        movieRepo.save(movie);
+    }
 }

@@ -39,14 +39,14 @@ public class UserMovieController {
         User user = userRepo.findByUsername(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-
         Page<MovieSummaryDTO> moviePage = userMovieService.getUserMoviesByStatus(user, status, page, sort);
-
 
         model.addAttribute("movies", moviePage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", moviePage.getTotalPages());
         model.addAttribute("totalItems", moviePage.getTotalElements());
+        model.addAttribute("hasPrevious", moviePage.hasPrevious());
+        model.addAttribute("hasNext", moviePage.hasNext());
 
         model.addAttribute("selectedStatus", status);
         model.addAttribute("sortOrder", sort);

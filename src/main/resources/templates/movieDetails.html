@@ -54,7 +54,11 @@
         <div th:unless="${movie.userWatchStatus == null}" class="alert alert-success d-inline-flex align-items-center gap-2">
           <i class="fas fa-check-circle text-success"></i>
           Already in your list:
-          <strong th:text="${movie.userWatchStatus.description}">WATCHED</strong>
+          <a th:href="@{/my-movies/{status}(status=${movie.userWatchStatus.name()})}"
+             class="fw-bold text-success status-link"
+             title="View your list">
+            <strong th:text="${movie.userWatchStatus.description}">WATCHED</strong>
+          </a>
         </div>
       </div>
     </div>

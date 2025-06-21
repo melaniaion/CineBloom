@@ -14,5 +14,7 @@ public interface MovieService {
     void createMovie(MovieFormDTO dto);
     void deleteById(Long id);
     Page<MovieSummaryDTO> findFiltered(String title, Long categoryId, String sortField, String sortDir, int page, int size);
+    MovieFormDTO getMovieFormById(Long id);
+    void updateMovie(MovieFormDTO dto);
 
 }
