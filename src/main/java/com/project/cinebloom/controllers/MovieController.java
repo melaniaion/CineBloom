@@ -51,6 +51,7 @@ public class MovieController {
         this.userRepo = userRepo;
     }
 
+
     @GetMapping("/{id}/poster")
     public ResponseEntity<byte[]> getPoster(@PathVariable Long id) {
         byte[] pic = movieRepo.findById(id)
@@ -69,6 +70,7 @@ public class MovieController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(pic);
     }
+
 
     @GetMapping
     public String movieList(@RequestParam(defaultValue = "") String title,
@@ -101,29 +103,6 @@ public class MovieController {
         return "moviesList";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/new")
-    public String addMovie(Model model) {
-        model.addAttribute("movie", new MovieFormDTO());
-        model.addAttribute("categories", categoryRepo.findAll());
-        return "movieForm";
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/new")
-    public String submitMovieForm(@Valid @ModelAttribute("movie") MovieFormDTO dto,
-                                  BindingResult bindingResult,
-                                  Model model,
-                                  RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("categories", categoryRepo.findAll());
-            return "movieForm";
-        }
-
-        movieService.createMovie(dto);
-        redirectAttributes.addFlashAttribute("successMovie", "Movie added successfully.");
-        return "redirect:/movies";
-    }
 
     @GetMapping("/{id}")
     public String movieDetails(@PathVariable Long id,
@@ -154,21 +133,60 @@ public class MovieController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/new")
+    public String addMovie(Model model) {
+        model.addAttribute("movie", new MovieFormDTO());
+        model.addAttribute("categories", categoryRepo.findAll());
+        return "movieForm";
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/new")
+    public String submitMovieForm(@Valid @ModelAttribute("movie") MovieFormDTO dto,
+                                  BindingResult bindingResult,
+                                  Model model,
+                                  RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryRepo.findAll());
+            return "movieForm";
+        }
+
+        try {
+            movieService.createMovie(dto);
+            redirectAttributes.addFlashAttribute("successMovie", "Movie added successfully.");
+            return "redirect:/movies";
+        } catch (Exception e) {
+            model.addAttribute("errorMovie", e.getMessage());
+            model.addAttribute("categories", categoryRepo.findAll());
+            return "movieForm";
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete")
     public String deleteMovie(@RequestParam Long id,
                               RedirectAttributes redirectAttributes) {
-        movieService.deleteById(id);
-        redirectAttributes.addFlashAttribute("successMovie", "Movie deleted successfully.");
+        try {
+            movieService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMovie", "Movie deleted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMovie", e.getMessage());
+        }
         return "redirect:/movies";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/edit/{id}")
-    public String editMovie(@PathVariable Long id, Model model) {
-        MovieFormDTO dto = movieService.getMovieFormById(id);
-        model.addAttribute("movie", dto);
-        model.addAttribute("categories", categoryRepo.findAll());
-        return "editMovie";
+    public String editMovie(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            MovieFormDTO dto = movieService.getMovieFormById(id);
+            model.addAttribute("movie", dto);
+            model.addAttribute("categories", categoryRepo.findAll());
+            return "editMovie";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMovie", e.getMessage());
+            return "redirect:/movies";
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -182,8 +200,14 @@ public class MovieController {
             return "editMovie";
         }
 
-        movieService.updateMovie(dto);
-        redirectAttributes.addFlashAttribute("successMovie", "Movie edited successfully.");
-        return "redirect:/movies";
+        try {
+            movieService.updateMovie(dto);
+            redirectAttributes.addFlashAttribute("successMovie", "Movie edited successfully.");
+            return "redirect:/movies";
+        } catch (Exception e) {
+            model.addAttribute("errorMovie", e.getMessage());
+            model.addAttribute("categories", categoryRepo.findAll());
+            return "editMovie";
+        }
     }
 }

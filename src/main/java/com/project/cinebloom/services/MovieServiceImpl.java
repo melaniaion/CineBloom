@@ -5,6 +5,9 @@ import com.project.cinebloom.dtos.MovieDTO;
 import com.project.cinebloom.dtos.MovieFormDTO;
 import com.project.cinebloom.dtos.MovieSummaryDTO;
 import com.project.cinebloom.dtos.ReviewDTO;
+import com.project.cinebloom.exceptions.CategoryNotFoundException;
+import com.project.cinebloom.exceptions.MovieNotFoundException;
+import com.project.cinebloom.logging.LogAdminAction;
 import com.project.cinebloom.mappers.MovieMapper;
 import com.project.cinebloom.repositories.CategoryRepository;
 import com.project.cinebloom.repositories.MovieRepository;
@@ -65,40 +68,9 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void createMovie(MovieFormDTO dto) {
-        Movie movie = movieMapper.toMovie(dto);
-
-        if (dto.getPoster() != null && !dto.getPoster().isEmpty()) {
-            try {
-                movie.setPoster(dto.getPoster().getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload poster", e);
-            }
-        }
-
-        Category category = categoryRepo.findById(dto.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
-        movie.setCategory(category);
-
-        MovieStats stats = MovieStats.builder()
-                .movie(movie)
-                .totalFavorites(0)
-                .totalReviews(0)
-                .build();
-        movie.setStats(stats);
-
-        movieRepo.save(movie);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        movieRepo.deleteById(id);
-    }
-
-    @Override
     public MovieDTO findById(Long movieId, User user) {
         Movie movie = movieRepo.findById(movieId)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
+                .orElseThrow(() -> new MovieNotFoundException(movieId));
 
         WatchStatus status = null;
         if (user != null) {
@@ -137,17 +109,51 @@ public class MovieServiceImpl implements MovieService {
                 .build();
     }
 
+    @LogAdminAction(action = "CREATE_MOVIE")
     @Override
-    public MovieFormDTO getMovieFormById(Long id) {
-        Movie movie = movieRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
-        return movieMapper.toFormDto(movie);
+    public void createMovie(MovieFormDTO dto) {
+        Movie movie = movieMapper.toMovie(dto);
+
+        if (dto.getPoster() != null && !dto.getPoster().isEmpty()) {
+            try {
+                movie.setPoster(dto.getPoster().getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload poster", e);
+            }
+        }
+
+        Category category = categoryRepo.findById(dto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
+        movie.setCategory(category);
+
+        MovieStats stats = MovieStats.builder()
+                .movie(movie)
+                .totalFavorites(0)
+                .totalReviews(0)
+                .build();
+        movie.setStats(stats);
+
+        movieRepo.save(movie);
+    }
+
+    @LogAdminAction(action = "DELETE_MOVIE")
+    @Override
+    public void deleteById(Long id) {
+        movieRepo.deleteById(id);
     }
 
     @Override
+    public MovieFormDTO getMovieFormById(Long id) {
+        Movie movie = movieRepo.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+        return movieMapper.toFormDto(movie);
+    }
+
+    @LogAdminAction(action = "UPDATE_MOVIE")
+    @Override
     public void updateMovie(MovieFormDTO dto) {
         Movie movie = movieRepo.findById(dto.getId())
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new MovieNotFoundException(dto.getId()));
 
         movie.setTitle(dto.getTitle());
         movie.setLanguage(dto.getLanguage());
@@ -156,7 +162,7 @@ public class MovieServiceImpl implements MovieService {
         movie.setDescription(dto.getDescription());
 
         Category category = categoryRepo.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Invalid category"));
+                .orElseThrow(() -> new CategoryNotFoundException(dto.getCategoryId()));
         movie.setCategory(category);
 
         if (dto.getPoster() != null && !dto.getPoster().isEmpty()) {

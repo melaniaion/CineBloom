@@ -21,6 +21,7 @@
         <h2 class="text-center display-6 fw-bold mb-5">🍿 Explore Movies</h2>
 
         <div th:if="${successMovie}" class="alert alert-success fade-alert" th:text="${successMovie}"></div>
+        <div th:if="${errorMovie}" class="alert alert-danger fade-alert" th:text="${errorMovie}"></div>
 
         <form th:action="@{/movies}" method="get" class="filter-form">
             <div class="search-wrapper">

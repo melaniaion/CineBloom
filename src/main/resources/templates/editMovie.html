@@ -20,6 +20,8 @@
     <div class="movie-form-card mx-auto">
       <h2 class="text-center mb-4">Edit Movie</h2>
 
+      <div th:if="${errorMovie}" class="alert alert-danger fade-alert" th:text="${errorMovie}"></div>
+
       <form th:action="@{/movies/edit}" th:object="${movie}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{id}" />
 
@@ -82,5 +84,17 @@
 </main>
 
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const alerts = document.querySelectorAll('.fade-alert');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        alert.style.transition = "opacity 0.5s ease";
+        alert.style.opacity = "0";
+        setTimeout(() => alert.remove(), 500);
+      }, 5000);
+    });
+  });
+</script>
 </body>
 </html>
