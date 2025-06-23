@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Appender for admin actions -->
+    <appender name="ADMIN_LOG_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/admin-actions.log</file>
+        <append>true</append>
+        <encoder>
+            <!-- Format of each log line -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Console output for normal logs -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Log only the aspect class to file (INFO and ERROR) -->
+    <logger name="com.project.cinebloom.logging.AdminActionLoggingAspect" level="INFO" additivity="false">
+        <appender-ref ref="ADMIN_LOG_FILE"/>
+    </logger>
+
+    <!-- Everything else goes to console -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
