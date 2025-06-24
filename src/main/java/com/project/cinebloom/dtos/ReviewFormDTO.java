@@ -12,6 +12,7 @@ import lombok.*;
 @Builder
 public class ReviewFormDTO {
     private Long id;
+    private Long movieId;
     @Min(1)
     @Max(5)
     private int value;

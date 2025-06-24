@@ -126,6 +126,7 @@
       <div class="collapse mt-2" th:id="'edit-review-' + ${review.id}">
         <form th:action="@{/reviews/edit}" method="post" class="edit-form p-3 rounded bg-light">
           <input type="hidden" name="id" th:value="${review.id}" />
+          <input type="hidden" name="movieId" th:value="${movie.id}" />
 
           <div class="d-flex align-items-center mb-2">
             <label class="me-2">Rating:</label>

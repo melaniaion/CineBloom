@@ -25,9 +25,6 @@ import java.security.Principal;
 public class ReviewController {
 
     private final ReviewService reviewService;
-    private final UserRepository userRepo;
-    private final ReviewRepository reviewRepo;
-    private final MovieStatsRepository statsRepo;
 
     @PostMapping("/movie/{movieId}")
     public String addReview(@PathVariable Long movieId,
@@ -44,17 +41,17 @@ public class ReviewController {
             return "redirect:/movies/" + movieId + "?error=form";
         }
 
-        User user = userRepo.findByUsername(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
         try {
-            reviewService.addReview(movieId, user, form);
+            reviewService.addReview(movieId, principal.getName(), form);
+            redirectAttributes.addFlashAttribute("reviewSuccess", "Review added successfully!");
         } catch (IllegalStateException e) {
-            //thrown if user already reviewed the movie
             return "redirect:/movies/" + movieId + "?error=duplicate";
+        } catch (UsernameNotFoundException e) {
+            return "redirect:/login?error=user";
+        } catch (Exception e) {
+            return "redirect:/movies/" + movieId + "?error=unexpected";
         }
 
-        redirectAttributes.addFlashAttribute("reviewSuccess", "Review added successfully!");
         return "redirect:/movies/" + movieId;
     }
 
@@ -62,40 +59,28 @@ public class ReviewController {
     public String updateReview(@ModelAttribute("reviewForm") @Valid ReviewFormDTO form,
                                Principal principal,
                                RedirectAttributes redirectAttributes) {
-        Review review = reviewRepo.findById(form.getId())
-                .orElseThrow(() -> new RuntimeException("Review not found"));
-
-        if (!review.getUser().getUsername().equals(principal.getName())) {
-            return "redirect:/access-denied";
+        try {
+            reviewService.updateReview(form, principal.getName());
+            redirectAttributes.addFlashAttribute("reviewSuccess", "Review updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("reviewError", e.getMessage());
         }
 
-        review.setValue(form.getValue());
-        review.setComment(form.getComment());
-
-        reviewRepo.save(review);
-        redirectAttributes.addFlashAttribute("reviewSuccess", "Review updated successfully!");
-
-        return "redirect:/movies/" + review.getMovie().getId();
+        return "redirect:/movies/" + form.getMovieId();
     }
 
     @PostMapping("/delete/{reviewId}")
-    public String deleteReview(@PathVariable Long reviewId, Principal principal,
+    public String deleteReview(@PathVariable Long reviewId,
+                               Principal principal,
                                RedirectAttributes redirectAttributes) {
-        Review review = reviewRepo.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("Review not found"));
-
-        if (!review.getUser().getUsername().equals(principal.getName())) {
-            return "redirect:/access-denied";
+        try {
+            Long movieId = reviewService.deleteReview(reviewId, principal.getName());
+            redirectAttributes.addFlashAttribute("reviewSuccess", "Review deleted successfully!");
+            return "redirect:/movies/" + movieId;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("reviewError", e.getMessage());
         }
 
-        Long movieId = review.getMovie().getId();
-
-        MovieStats stats = review.getMovie().getStats();
-        stats.setTotalReviews(stats.getTotalReviews() - 1);
-        statsRepo.save(stats);
-
-        reviewRepo.deleteById(reviewId);
-        redirectAttributes.addFlashAttribute("reviewSuccess", "Review deleted successfully!");
-        return "redirect:/movies/" + movieId;
+        return "redirect:/movies";
     }
 }
