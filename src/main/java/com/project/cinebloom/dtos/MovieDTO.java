@@ -21,7 +21,6 @@ public class MovieDTO {
     private int duration;
     private String language;
     private String categoryName;
-
     private int totalFavorites;
     private int totalReviews;
     private WatchStatus userWatchStatus;

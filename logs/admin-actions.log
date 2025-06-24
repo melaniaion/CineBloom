@@ -9,3 +9,7 @@
 2025-06-24 01:35:53 [http-nio-8080-exec-7] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed UPDATE_MOVIE on movie 'Mirage' (id=13).
 2025-06-24 01:36:46 [http-nio-8080-exec-5] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed CREATE_MOVIE on movie 'Test Movie '.
 2025-06-24 01:36:52 [http-nio-8080-exec-2] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed DELETE_MOVIE on movie with id=14.
+2025-06-24 19:35:07 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
+2025-06-24 20:59:51 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
+2025-06-24 21:08:05 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
+2025-06-24 21:08:59 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
