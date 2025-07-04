@@ -1,0 +1,178 @@
+:root {
+    --blue-light: #d8f0ff;
+    --sky-bg: #e0f7ff;
+    --rose-bg: #fef1f4;
+    --charcoal: #1c1c1c;
+    --popcorn: #fcd34d;
+    --primary-pink: #ff80ab;
+
+    --genre-horror: linear-gradient(135deg, #6e003e, #ff0059);
+    --genre-romance: linear-gradient(135deg, #ff80ab, #ffc1e3);
+    --genre-comedy: linear-gradient(135deg, #ffd166, #ffe08a);
+    --genre-drama: linear-gradient(135deg, #667eea, #764ba2);
+    --genre-action: linear-gradient(135deg, #ff512f, #dd2476);
+}
+
+body {
+    background: linear-gradient(135deg, var(--blue-light), var(--sky-bg));
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+
+.watchlist-page {
+    padding-top: 90px;
+}
+
+h2 {
+    color: var(--charcoal);
+    font-weight: 700;
+    border-bottom: 3px solid var(--primary-pink);
+    display: inline-block;
+    padding-bottom: 0.3rem;
+}
+
+
+.btn-popcorn {
+    background: var(--popcorn);
+    color: var(--charcoal);
+    border: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-popcorn:hover {
+    background-color: #fcd000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    color: #000;
+}
+
+.dropdown-menu {
+    border-radius: 0.75rem;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    background: white;
+    min-width: 180px;
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    padding: 0.6rem 1.25rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background: var(--popcorn);
+    color: #000;
+}
+
+.card {
+    background: var(--rose-bg);
+    border: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.08);
+}
+
+.poster-img {
+    height: 360px;
+    object-fit: cover;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--charcoal);
+}
+
+.genre-badge {
+    font-size: 0.75rem;
+    padding: 0.3em 0.7em;
+    border-radius: 999px;
+    font-weight: 500;
+}
+
+.genre-romance {
+    background: var(--genre-romance);
+    color: #000;
+}
+
+.genre-comedy {
+    background: var(--genre-comedy);
+    color: #000;
+}
+
+.genre-horror {
+    background: var(--genre-horror);
+    color: #fff;
+}
+
+.genre-drama {
+    background: var(--genre-drama);
+    color: #fff;
+}
+
+.genre-action {
+    background: var(--genre-action);
+    color: #fff;
+}
+
+.card-footer {
+    background: none;
+    border-top: none;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-footer form {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.card-footer button,
+.card-footer select {
+    font-size: 0.85rem;
+}
+
+.fade-alert {
+    transition: opacity 0.5s ease;
+    margin-bottom: 1rem;
+}
+
+.empty-message {
+    padding: 3rem 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #666;
+    max-width: 500px;
+    margin: 0 auto;
+}
+.page-link {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-pink);
+    color: #fff;
+    border-color: var(--primary-pink);
+}
+
+.page-item.disabled .page-link {
+    opacity: 0.5;
+    pointer-events: none;
+}

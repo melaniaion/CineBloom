@@ -1,0 +1,83 @@
+:root {
+    --popcorn: #fcd34d;
+    --rose: #ffc1e3;
+    --sky-blue: #c7ecff;
+    --dark: #1c1c1c;
+    --white: #ffffff;
+    --soft-shadow: rgba(0, 0, 0, 0.1);
+    --hover-shadow: rgba(0, 0, 0, 0.15);
+    --rounded: 1.25rem;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #e0f7ff, #d8f0ff);
+}
+
+.my-movies-home h2 {
+    color: var(--dark);
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+
+.title-glow {
+    text-shadow: 1px 1px 0 #fff, 2px 2px 0 var(--popcorn);
+}
+
+.movie-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.movie-list-card {
+    border-radius: var(--rounded);
+    padding: 2.5rem 1.5rem;
+    height: 100%;
+    text-align: center;
+    color: var(--dark);
+    background: #fff;
+    box-shadow: 0 4px 12px var(--soft-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.movie-list-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 8px 20px var(--hover-shadow);
+}
+
+.movie-list-card .icon {
+    color: var(--dark);
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.movie-list-card:hover .icon {
+    transform: scale(1.1);
+}
+
+.card-want {
+    background: linear-gradient(145deg, #fff4bf, var(--popcorn));
+}
+
+.card-watching {
+    background: linear-gradient(145deg, #d7f1ff, var(--sky-blue));
+}
+
+.card-watched {
+    background: linear-gradient(145deg, #ffe1ec, var(--rose));
+}
+
+.movie-list-card h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.movie-list-card p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}

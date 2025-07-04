@@ -1,85 +1,137 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>CineBloom</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title th:text="${appName}">CineBloom</title>
 
-    <script src="/webjars/jquery/3.7.1/jquery.min.js"></script>
-    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.min.css"/>
+    <link th:href="@{/webjars/fontsource__poppins/4.5.1/css/poppins.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/font-awesome/6.5.2/css/all.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/fragments.css}" rel="stylesheet"/>
+    <link th:href="@{/css/moviesList.css}" rel="stylesheet"/>
 </head>
 <body>
-<div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="nav-link" th:href="@{'/'}">
-            <i class="fas fa-home mx-1"></i>
-        </a>
-        <button class="navbar-toggler" type="button"
-                data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ml-auto topnav">
-                <li class="nav-item">
-                    <a class="nav-link active" th:href="@{'/movies'}">Movies</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn-primary" th:href="@{'/books/form'}">
-                        <i class="fas fa-plus-circle"></i> Add
-                    </a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto topnav">
-                <li class="nav-item">
-                    <a class="nav-link btn-primary" th:href="@{'/register'}">
-                        <i class="fas fa-user-plus"></i> Register
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn-primary" th:href="@{'/login'}">
-                        <i class="fas fa-sign-in-alt"></i> Log In
-                    </a>
-                </li>
-            </ul>
+<div th:replace="fragments :: siteNavbar"></div>
+
+
+<main class="movies-page">
+    <div class="container justify-content-center">
+        <h2 class="text-center display-6 fw-bold mb-5">🍿 Explore Movies</h2>
+
+        <div th:if="${successMovie}" class="alert alert-success fade-alert" th:text="${successMovie}"></div>
+        <div th:if="${errorMovie}" class="alert alert-danger fade-alert" th:text="${errorMovie}"></div>
+
+        <form th:action="@{/movies}" method="get" class="filter-form">
+            <div class="search-wrapper">
+                <input type="text" name="title" placeholder="🔍 Search movies..."
+                       th:value="${title}" class="search-bar"/>
+            </div>
+
+            <div class="filter-group">
+                <select name="categoryId" class="filter-select">
+                    <option value="">All Categories</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.id}"
+                            th:selected="${cat.id == categoryId}"
+                            th:text="${cat.name}"></option>
+                </select>
+
+                <select name="sortOption" class="filter-select">
+                    <option value="title_asc" th:selected="${sort == 'title' and dir == 'asc'}">Title A–Z</option>
+                    <option value="title_desc" th:selected="${sort == 'title' and dir == 'desc'}">Title Z–A</option>
+                    <option value="releaseDate_asc" th:selected="${sort == 'releaseDate' and dir == 'asc'}">Oldest First</option>
+                    <option value="releaseDate_desc" th:selected="${sort == 'releaseDate' and dir == 'desc'}">Newest First</option>
+                </select>
+
+                <button type="submit" class="filter-btn">
+                    <i class="fas fa-sliders-h me-1"></i> Apply
+                </button>
+            </div>
+        </form>
+
+        <div th:if="${#lists.isEmpty(movies)}" class="no-movies-msg text-center text-muted mb-5">
+            <i class="fas fa-film fa-2x d-block mb-3"></i>
+            <h5>No movies found matching your criteria.</h5>
         </div>
-    </nav>
-</div>
 
-<div class="container">
-    <table class="table table-hover">
-        <thead class="thead-inverse">
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Description</th>
-            <th></th>
-            <th></th>
-        </tr>
-        </thead>
-        <tr th:each="movie, stat : ${movies}"
-            th:class="${stat.odd}? 'table-light':''">
-            <td th:text="${movie.id}">1</td>
-            <td th:text="${movie.title}">Book</td>
-            <td th:text="${movie.releaseDate}">Release Date</td>
-            <td th:text="${movie.description}">Description</td>
-            <td>
-                <a th:href="@{'/movies/edit/' + ${movie.id}}">
-                    <i class="fa-solid fa-pen"></i>
-                </a>
-            </td>
-            <td>
-                <a th:href="@{'/movies/delete/' + ${movie.id}}"
-                   onclick="return confirm('Delete this movie?');">
-                    <i class="fa-solid fa-trash"></i>
-                </a>
-            </td>
-        </tr>
-    </table>
-</div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6" th:each="movie : ${movies}">
+                <div class="movie-card shadow-sm position-relative">
+                    <a th:href="@{'/movies/' + ${movie.id}}" class="stretched-link"></a>
+
+                    <div class="poster-wrapper">
+                        <img th:src="@{/movies/{id}/poster(id=${movie.id})}" alt="Poster" class="poster-img" />
+                    </div>
+
+                    <div class="movie-info p-3 pb-2">
+                        <h5 class="movie-title mb-2" th:text="${movie.title}">Movie Title</h5>
+
+                        <div class="mb-2">
+                          <span class="badge category-badge" th:classappend="' genre-' + ${movie.categoryName.toLowerCase()}">
+                            <i class="fas fa-film me-1"></i>
+                            <span th:text="${movie.categoryName}">Genre</span>
+                          </span>
+                        </div>
+
+                        <div class="movie-meta">
+                            <i class="far fa-calendar-alt me-1"></i>
+                            <span class="label">Release:</span>
+                            <span class="value" th:text="${movie.releaseDate}">2025-06-14</span>
+                        </div>
+                    </div>
+
+                    <!-- Admin Actions -->
+                    <div class="admin-actions d-flex justify-content-between px-3 py-2"
+                         sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{'/movies/edit/' + ${movie.id}}" class="btn btn-sm btn-outline-primary z-2">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </a>
+                        <form th:action="@{/movies/delete}" method="post" class="d-inline z-2">
+                            <input type="hidden" name="id" th:value="${movie.id}" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash-alt me-1"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="d-flex justify-content-center mt-5">
+            <ul class="pagination pagination-sm">
+                <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled'">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage - 1}, title=${title}, categoryId=${categoryId}, sortOption=${sortOption})}">«</a>
+                </li>
+
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/movies(page=${i}, title=${title}, categoryId=${categoryId}, sortOption=${sortOption})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+
+                <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage + 1}, title=${title}, categoryId=${categoryId}, sortOption=${sortOption})}">»</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const alerts = document.querySelectorAll('.fade-alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
+            }, 5000);
+        });
+    });
+</script>
 </body>
 </html>

@@ -18,8 +18,6 @@ public class MovieStats {
     @OneToOne(optional = false)
     @JoinColumn(name = "movie_id", unique = true)
     private Movie movie;
-
-    private Double averageRating;
     private int totalReviews;
     private int totalFavorites;
 }

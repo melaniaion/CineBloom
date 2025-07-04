@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${appName}">CineBloom</title>
+
+  <link th:href="@{/webjars/fontsource__poppins/4.5.1/css/poppins.css}" rel="stylesheet"/>
+  <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet"/>
+  <link th:href="@{/webjars/font-awesome/6.5.2/css/all.min.css}" rel="stylesheet"/>
+  <link th:href="@{/css/fragments.css}" rel="stylesheet"/>
+  <link th:href="@{/css/movieDetails.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<div th:replace="fragments :: siteNavbar"></div>
+
+<main class="movie-details-page container py-5">
+  <div class="row mb-5 g-4">
+    <div class="col-md-4 text-center">
+      <img th:src="@{/movies/{id}/poster(id=${movie.id})}" alt="Poster" class="img-fluid rounded shadow-sm"/>
+    </div>
+    <div class="col-md-8">
+      <h2 class="fw-bold mb-2" th:text="${movie.title}">Movie Title</h2>
+      <span class="badge mb-3"
+            th:class="'badge genre-badge genre-' + ${movie.categoryName.toLowerCase()}">
+        <span th:text="${movie.categoryName}">Genre</span>
+      </span>
+
+
+      <ul class="list-unstyled text-muted mb-3">
+        <li><i class="far fa-calendar-alt me-2"></i> <strong>Release:</strong> <span th:text="${movie.releaseDate}">2025-07-14</span></li>
+        <li><i class="far fa-clock me-2"></i> <strong>Duration:</strong> <span th:text="${movie.duration}">120</span> min</li>
+        <li><i class="fas fa-language me-2"></i> <strong>Language:</strong> <span th:text="${movie.language}">English</span></li>
+        <li><i class="fas fa-heart me-2 text-danger"></i> <strong>Added:</strong> <span th:text="${movie.totalFavorites}">542</span></li>
+      </ul>
+
+      <p class="text-dark" th:text="${movie.description}">Movie description...</p>
+
+      <!-- Watchlist Status -->
+      <div class="mt-3">
+        <div th:if="${movie.userWatchStatus == null}">
+          <form th:action="@{/watchlist}" method="post" class="d-flex gap-2">
+            <input type="hidden" name="movieId" th:value="${movie.id}"/>
+            <select name="status" class="form-select w-auto">
+              <option th:each="status : ${statuses}"
+                      th:value="${status}"
+                      th:text="${status.description}">
+              </option>
+            </select>
+            <button type="submit" class="btn btn-cta">Add</button>
+          </form>
+        </div>
+        <div th:unless="${movie.userWatchStatus == null}" class="alert alert-success d-inline-flex align-items-center gap-2">
+          <i class="fas fa-check-circle text-success"></i>
+          Already in your list:
+          <a th:href="@{/my-movies/{status}(status=${movie.userWatchStatus.name()})}"
+             class="fw-bold text-success status-link"
+             title="View your list">
+            <strong th:text="${movie.userWatchStatus.description}">WATCHED</strong>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="reviews-section">
+    <h4 class="mb-3">Reviews <small class="text-muted" th:text="'(' + ${movie.totalReviews} + ')'"> (10) </small></h4>
+
+    <div th:if="${reviewError}" class="alert alert-danger fade-alert" th:text="${reviewError}"></div>
+    <div th:if="${reviewSuccess}" class="alert alert-success fade-alert" th:text="${reviewSuccess}"></div>
+
+
+    <!-- Add Review -->
+    <form th:action="@{'/reviews/movie/' + ${movie.id}}" th:object="${reviewForm}" method="post" class="mb-4">
+      <div class="mb-2 d-flex align-items-center gap-2">
+        <label class="me-2">Rating:</label>
+        <select th:field="*{value}" class="form-select w-auto">
+          <option th:value="5">★★★★★</option>
+          <option th:value="4">★★★★</option>
+          <option th:value="3">★★★</option>
+          <option th:value="2">★★</option>
+          <option th:value="1">★</option>
+        </select>
+      </div>
+      <textarea th:field="*{comment}" class="form-control mb-2" rows="3" placeholder="Write your thoughts..."></textarea>
+      <button type="submit" class="btn btn-cta">Submit</button>
+    </form>
+
+    <!-- Review List -->
+    <div class="review mb-4 pb-3 border-bottom" th:each="review : ${movie.reviews}">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <strong th:text="${review.username}">User</strong>
+          <span class="text-muted small ms-2" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
+        </div>
+
+        <div th:if="${review.userId == userId}" class="review-actions ms-auto">
+          <button type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  data-bs-toggle="collapse"
+                  th:attr="data-bs-target='#edit-review-' + ${review.id}">
+            <i class="fas fa-pen"></i>
+          </button>
+          <form th:action="@{'/reviews/delete/' + ${review.id}}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="mb-1">
+    <span th:each="i : ${#numbers.sequence(1, 5)}">
+      <i th:class="${i <= review.value} ? 'fas fa-star text-warning' : 'far fa-star text-secondary'"></i>
+    </span>
+      </div>
+
+      <p th:if="${review.comment != null and !review.comment.isEmpty()}"
+         th:text="${review.comment}" class="mb-2">
+        Review comment
+      </p>
+
+      <!-- Hidden Edit Form -->
+      <div class="collapse mt-2" th:id="'edit-review-' + ${review.id}">
+        <form th:action="@{/reviews/edit}" method="post" class="edit-form p-3 rounded bg-light">
+          <input type="hidden" name="id" th:value="${review.id}" />
+          <input type="hidden" name="movieId" th:value="${movie.id}" />
+
+          <div class="d-flex align-items-center mb-2">
+            <label class="me-2">Rating:</label>
+            <select name="value" class="form-select w-auto form-select-sm">
+              <option th:each="i : ${#numbers.sequence(1, 5)}"
+                      th:value="${i}"
+                      th:selected="${i == review.value}"
+                      th:text="${'★'.repeat(i)}">
+              </option>
+            </select>
+          </div>
+
+          <textarea name="comment" rows="2" class="form-control form-control-sm mb-2"
+                    th:text="${review.comment}" placeholder="Edit your comment..."></textarea>
+
+          <button type="submit" class="btn btn-sm btn-cta">
+            <i class="fas fa-save me-1"></i>Save
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const alerts = document.querySelectorAll('.fade-alert');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        alert.style.transition = "opacity 0.5s ease";
+        alert.style.opacity = "0";
+        setTimeout(() => alert.remove(), 500);
+      }, 5000);
+    });
+  });
+</script>
+
+
+</body>
+</html>

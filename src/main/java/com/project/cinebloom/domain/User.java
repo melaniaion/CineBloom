@@ -37,6 +37,13 @@ public class User {
     @JoinTable(name = "user_authority", joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")}, inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
     private Set<Authority> authorities;
 
+    @PreRemove
+    private void removeAuthoritiesAssociation() {
+        for (Authority authority : authorities) {
+            authority.getUsers().remove(this);
+        }
+    }
+
     @Builder.Default
     private Boolean accountNonExpired = true;
 

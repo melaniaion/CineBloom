@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Movies | CineBloom</title>
+
+  <link th:href="@{/webjars/fontsource__poppins/4.5.1/css/poppins.css}" rel="stylesheet"/>
+  <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet"/>
+  <link th:href="@{/webjars/font-awesome/6.5.2/css/all.min.css}" rel="stylesheet"/>
+  <link th:href="@{/css/fragments.css}" rel="stylesheet"/>
+  <link th:href="@{/css/myMoviesHome.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<div th:replace="fragments :: siteNavbar"></div>
+
+<main class="my-movies-home container py-5">
+  <h2 class="fw-bold text-center mb-5 title-glow">🍿 My Movie Lists</h2>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col">
+      <a th:href="@{/my-movies/WANT_TO_WATCH}" class="movie-card-link">
+        <div class="movie-list-card card-want">
+          <i class="fas fa-star fa-2x mb-3 icon"></i>
+          <h5 class="mb-1">Want to Watch</h5>
+          <p class="text-muted">Movies you plan to watch soon</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="col">
+      <a th:href="@{/my-movies/WATCHING}" class="movie-card-link">
+        <div class="movie-list-card card-watching">
+          <i class="fas fa-play-circle fa-2x mb-3 icon"></i>
+          <h5 class="mb-1">Watching</h5>
+          <p class="text-muted">Currently watching titles</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="col">
+      <a th:href="@{/my-movies/WATCHED}" class="movie-card-link">
+        <div class="movie-list-card card-watched">
+          <i class="fas fa-check-circle fa-2x mb-3 icon"></i>
+          <h5 class="mb-1">Watched</h5>
+          <p class="text-muted">Your completed movie list</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</main>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>
+

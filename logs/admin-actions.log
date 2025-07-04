@@ -1,0 +1,15 @@
+2025-06-24 01:25:24 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
+2025-06-24 01:26:14 [http-nio-8080-exec-10] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed CREATE_MOVIE via method 'createMovie'. Args: [com.project.cinebloom.dtos.MovieFormDTO@209afa57]
+2025-06-24 01:26:27 [http-nio-8080-exec-10] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed UPDATE_MOVIE via method 'updateMovie'. Args: [com.project.cinebloom.dtos.MovieFormDTO@327bbbd8]
+2025-06-24 01:26:41 [http-nio-8080-exec-9] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed UPDATE_MOVIE via method 'updateMovie'. Args: [com.project.cinebloom.dtos.MovieFormDTO@6bae8bd5]
+2025-06-24 01:26:50 [http-nio-8080-exec-2] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed DELETE_MOVIE via method 'deleteById'. Args: [11]
+2025-06-24 01:31:22 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
+2025-06-24 01:33:42 [http-nio-8080-exec-8] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed CREATE_MOVIE on movie 'Free Guy'.
+2025-06-24 01:35:39 [http-nio-8080-exec-8] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed CREATE_MOVIE on movie 'Mirage'.
+2025-06-24 01:35:53 [http-nio-8080-exec-7] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed UPDATE_MOVIE on movie 'Mirage' (id=13).
+2025-06-24 01:36:46 [http-nio-8080-exec-5] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed CREATE_MOVIE on movie 'Test Movie '.
+2025-06-24 01:36:52 [http-nio-8080-exec-2] INFO  c.p.c.l.AdminActionLoggingAspect - Admin 'admin' successfully performed DELETE_MOVIE on movie with id=14.
+2025-06-24 19:35:07 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
+2025-06-24 20:59:51 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
+2025-06-24 21:08:05 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active
+2025-06-24 21:08:59 [restartedMain] INFO  c.p.c.l.AdminActionLoggingAspect - Logging aspect is active

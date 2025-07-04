@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CineBloom | Edit Movie</title>
+
+  <link th:href="@{/webjars/fontsource__poppins/4.5.1/css/poppins.css}" rel="stylesheet" />
+  <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet" />
+  <link th:href="@{/webjars/font-awesome/6.5.2/css/all.min.css}" rel="stylesheet" />
+  <link th:href="@{/css/fragments.css}" rel="stylesheet" />
+  <link th:href="@{/css/movieForm.css}" rel="stylesheet" />
+</head>
+<body>
+
+<div th:replace="fragments :: siteNavbar"></div>
+
+<main class="movie-form-page">
+  <div class="container">
+    <div class="movie-form-card mx-auto">
+      <h2 class="text-center mb-4">Edit Movie</h2>
+
+      <div th:if="${errorMovie}" class="alert alert-danger fade-alert" th:text="${errorMovie}"></div>
+
+      <form th:action="@{/movies/edit}" th:object="${movie}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input th:field="*{title}" id="title" class="form-control" placeholder="Movie title" required />
+          <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger small"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="poster" class="form-label">Poster</label>
+          <input th:field="*{poster}" type="file" id="poster" class="form-control" accept="image/*" />
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea th:field="*{description}" id="description" class="form-control" rows="3"
+                    placeholder="Brief description"></textarea>
+          <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger small"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="releaseDate" class="form-label">Release Date</label>
+
+          <input type="date"
+                 id="releaseDate"
+                 name="releaseDate"
+                 class="form-control"
+                 th:value="${movie.releaseDate != null ? #temporals.format(movie.releaseDate, 'yyyy-MM-dd') : ''}"
+                 required />
+          <div th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}" class="text-danger small"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="duration" class="form-label">Duration (minutes)</label>
+          <input th:field="*{duration}" type="number" id="duration" class="form-control" min="1" required />
+          <div th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}" class="text-danger small"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="language" class="form-label">Language</label>
+          <input th:field="*{language}" id="language" class="form-control" required />
+          <div th:if="${#fields.hasErrors('language')}" th:errors="*{language}" class="text-danger small"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="categoryId" class="form-label">Category</label>
+          <select th:field="*{categoryId}" id="categoryId" class="form-select" required>
+            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">Category</option>
+          </select>
+          <div th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="text-danger small"></div>
+        </div>
+
+        <button type="submit" class="btn btn-cta w-100 mt-3">
+          <i class="fas fa-save me-2"></i>Update Movie
+        </button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const alerts = document.querySelectorAll('.fade-alert');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        alert.style.transition = "opacity 0.5s ease";
+        alert.style.opacity = "0";
+        setTimeout(() => alert.remove(), 500);
+      }, 5000);
+    });
+  });
+</script>
+</body>
+</html>

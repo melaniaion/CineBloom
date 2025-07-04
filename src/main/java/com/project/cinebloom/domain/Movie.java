@@ -17,13 +17,14 @@ public class Movie {
 
     @Column(nullable = false)
     private String title;
-
-    private String poster;
-
+    @Lob
+    private byte[] poster;
     private LocalDate releaseDate;
+    private String language;
 
     @Lob
     private String description;
+    private int duration;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserMovie> userMovies;

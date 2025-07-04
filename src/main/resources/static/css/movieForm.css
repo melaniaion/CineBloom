@@ -1,0 +1,49 @@
+:root {
+    --blue-light: #d8f0ff;
+    --sky-bg: #e0f7ff;
+    --blue-dark: #003b5c;
+    --popcorn: #fcd34d;
+    --rose-bg: #F8EDED;
+}
+
+body {
+    background: linear-gradient(135deg, var(--blue-light), var(--sky-bg));
+    font-family: 'Poppins', sans-serif;
+}
+
+.movie-form-page {
+    padding-top: 90px;
+    padding-bottom: 3rem;
+    min-height: 100vh;
+}
+
+.movie-form-card {
+    background: #F8EDED;
+    backdrop-filter: blur(6px);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+    width: 100%;
+}
+
+.movie-form-card h2 {
+    color: var(--blue-dark);
+}
+
+.btn-cta {
+    background: var(--popcorn);
+    color: var(--blue-dark);
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.text-danger {
+    font-size: 0.875rem;
+}

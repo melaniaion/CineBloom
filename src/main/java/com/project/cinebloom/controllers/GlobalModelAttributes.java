@@ -3,6 +3,7 @@ package com.project.cinebloom.controllers;
 import com.project.cinebloom.domain.User;
 import com.project.cinebloom.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -22,5 +23,10 @@ public class GlobalModelAttributes {
         return userRepository.findByUsername(principal.getName())
                 .map(User::getId)
                 .orElse(null);
+    }
+
+    @ModelAttribute
+    public void addGlobalAttributes(Model model) {
+        model.addAttribute("appName", "CineBloom");
     }
 }

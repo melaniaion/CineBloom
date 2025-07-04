@@ -1,0 +1,62 @@
+:root {
+    --blue-light: #d8f0ff;
+    --sky-bg: #e0f7ff;
+    --blue-dark: #003b5c;
+    --popcorn: #fcd34d;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, var(--blue-light), var(--sky-bg));
+    overflow-x: hidden;
+}
+
+.profile-page {
+    padding-top: 80px;
+    padding-bottom: 2rem;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.profile-card {
+    background: #F8EDED;
+    backdrop-filter: blur(6px);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+}
+
+.profile-img-lg {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--blue-dark);
+    background: #fff;
+}
+
+.section-box {
+    background: rgba(248, 249, 250, 0.7);
+    border: 1px solid #dee2e6;
+}
+
+.btn-cta {
+    background: var(--popcorn);
+    color: var(--blue-dark);
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
