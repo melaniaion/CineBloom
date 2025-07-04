@@ -17,13 +17,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -108,5 +108,107 @@ public class ReviewControllerIT {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = "USER")
+    void addReview_shouldRedirectOnDuplicate() throws Exception {
+        // Setup: the first review
+        Review review = Review.builder()
+                .user(userRepo.findByUsername("testuser").orElseThrow())
+                .movie(movieRepo.findById(movieId).orElseThrow())
+                .value(5)
+                .comment("Original review")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        reviewRepo.save(review);
+
+        // Attempt to add a second review (should be blocked)
+        mockMvc.perform(post("/reviews/movie/{movieId}", movieId)
+                        .param("value", "4")
+                        .param("comment", "Trying to review again"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/movies/" + movieId + "?error=duplicate"));
+    }
+
+    @Test
+    void addReview_shouldReturnUnauthorizedWhenNotAuthenticated() throws Exception {
+        mockMvc.perform(post("/reviews/movie/{movieId}", movieId)
+                        .param("value", "5")
+                        .param("comment", "I am anonymous"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = "USER")
+    void updateReview_shouldSucceedForValidUser() throws Exception {
+        User user = userRepo.findByUsername("testuser").orElseThrow();
+        Movie movie = movieRepo.findById(movieId).orElseThrow();
+
+        // Save a review owned by that user
+        Review review = Review.builder()
+                .user(user)
+                .movie(movie)
+                .value(3)
+                .comment("Original comment")
+                .createdAt(LocalDateTime.now())
+                .build();
+        review = reviewRepo.save(review);
+
+        // Act & Assert
+        mockMvc.perform(post("/reviews/edit")
+                        .param("id", review.getId().toString())
+                        .param("value", "5")
+                        .param("comment", "Updated comment")
+                        .param("movieId", movie.getId().toString()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/movies/" + movieId));
+    }
+
+    @Test
+    @WithMockUser(username = "otheruser", roles = "USER")
+    void updateReview_shouldFailForWrongUser() throws Exception {
+        // save a different user as review owner
+        User owner = userRepo.findByUsername("testuser").orElseThrow();
+        Movie movie = movieRepo.findById(movieId).orElseThrow();
+
+        Review review = Review.builder()
+                .user(owner)
+                .movie(movie)
+                .value(3)
+                .comment("Original comment")
+                .createdAt(LocalDateTime.now())
+                .build();
+        review = reviewRepo.save(review);
+
+        // another user tries to update it
+        mockMvc.perform(post("/reviews/edit")
+                        .param("id", review.getId().toString())
+                        .param("value", "4")
+                        .param("comment", "Hacked!")
+                        .param("movieId", movie.getId().toString()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/movies/" + movieId));
+    }
+
+    @Test
+    @WithMockUser(username = "otheruser", roles = "USER")
+    void deleteReview_shouldRedirectToMoviesForWrongUser() throws Exception {
+        User owner = userRepo.findByUsername("testuser").orElseThrow();
+        Movie movie = movieRepo.findById(movieId).orElseThrow();
+
+        Review review = Review.builder()
+                .user(owner)
+                .movie(movie)
+                .value(4)
+                .comment("Can't touch this")
+                .createdAt(LocalDateTime.now())
+                .build();
+        review = reviewRepo.save(review);
+
+        mockMvc.perform(post("/reviews/delete/{reviewId}", review.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/movies"));
     }
 }
