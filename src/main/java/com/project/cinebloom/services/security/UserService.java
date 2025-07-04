@@ -8,11 +8,17 @@ import com.project.cinebloom.mappers.UserMapper;
 import com.project.cinebloom.repositories.security.AuthorityRepository;
 import com.project.cinebloom.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.security.Principal;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -22,6 +28,34 @@ public class UserService {
     private final AuthorityRepository authRepo;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    @Value("classpath:/static/images/default-user.jpg")
+    private Resource defaultUserImage;
+
+    public Optional<User> findByUsername(String username) {
+        return userRepo.findByUsername(username);
+    }
+
+    public Long getUserId(Principal principal) {
+        if (principal == null)
+            throw new UsernameNotFoundException("No authenticated user");
+
+        return userRepo.findByUsername(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"))
+                .getId();
+    }
+
+    public byte[] getPictureOrDefault(Long id, Resource defaultImage) {
+        return userRepo.findById(id)
+                .map(User::getProfilePicture)
+                .filter(p -> p != null && p.length > 0)
+                .orElseGet(() -> {
+                    try {
+                        return Files.readAllBytes(defaultUserImage.getFile().toPath());
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to load default image", e);
+                    }
+                });
+    }
 
     public void register(UserRegistrationDTO dto, BindingResult br) throws IOException {
         if(userRepo.existsByUsername(dto.getUsername()))

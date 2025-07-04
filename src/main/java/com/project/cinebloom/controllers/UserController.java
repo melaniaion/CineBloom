@@ -20,41 +20,20 @@ import java.security.Principal;
 @Controller
 @RequiredArgsConstructor
 public class UserController {
-    private final UserRepository userRepo;
     private final UserService userService;
     @Value("classpath:/static/images/default-user.jpg")
     private Resource defaultUserImage;
 
-    private Long getUserId(Principal principal) {
-        String username = principal.getName();
-        return userRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"))
-                .getId();
-    }
-
     @GetMapping("/users/{id}/picture")
     public ResponseEntity<byte[]> getPicture(@PathVariable Long id) {
-        byte[] pic = userRepo.findById(id)
-                .map(User::getProfilePicture)
-                .filter(bytes -> bytes != null && bytes.length > 0)
-                .orElseGet(() -> {
-                    try {
-                        return Files.readAllBytes(defaultUserImage.getFile().toPath());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(pic);
+        byte[] pic = userService.getPictureOrDefault(id, defaultUserImage);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(pic);
     }
 
     @GetMapping("/profile")
     public String getProfile(Principal principal, Model model) {
         try {
-            Long id = getUserId(principal);
+            Long id = userService.getUserId(principal);
             UserProfileDTO dto = userService.getProfile(id);
             model.addAttribute("profile", dto);
         } catch (Exception e) {
@@ -69,7 +48,7 @@ public class UserController {
                                 @ModelAttribute("profile") UserProfileDTO dto,
                                 Model model) {
 
-        Long id = getUserId(principal);
+        Long id = userService.getUserId(principal);
         try {
             userService.updateProfile(id, dto);
             model.addAttribute("ProfileUpdateSuccess", "Profile updated successfully");
@@ -87,7 +66,7 @@ public class UserController {
                                 @RequestParam String currentPassword,
                                 Model model) {
         try {
-            Long id = getUserId(principal);
+            Long id = userService.getUserId(principal);
             userService.deleteAccount(id, currentPassword);
             return "redirect:/perform_logout";
         } catch (Exception e) {

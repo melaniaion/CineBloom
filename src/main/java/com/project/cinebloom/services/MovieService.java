@@ -16,5 +16,6 @@ public interface MovieService {
     Page<MovieSummaryDTO> findFiltered(String title, Long categoryId, String sortField, String sortDir, int page, int size);
     MovieFormDTO getMovieFormById(Long id);
     void updateMovie(MovieFormDTO dto);
+    byte[] getPosterOrDefault(Long id);
 
 }

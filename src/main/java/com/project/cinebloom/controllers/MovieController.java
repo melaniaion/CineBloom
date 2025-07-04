@@ -4,13 +4,13 @@ import com.project.cinebloom.domain.User;
 import com.project.cinebloom.domain.WatchStatus;
 import com.project.cinebloom.dtos.MovieDTO;
 import com.project.cinebloom.dtos.MovieFormDTO;
-import com.project.cinebloom.domain.Movie;
 import com.project.cinebloom.dtos.MovieSummaryDTO;
 import com.project.cinebloom.dtos.ReviewFormDTO;
-import com.project.cinebloom.repositories.CategoryRepository;
 import com.project.cinebloom.repositories.MovieRepository;
 import com.project.cinebloom.repositories.security.UserRepository;
+import com.project.cinebloom.services.CategoryService;
 import com.project.cinebloom.services.MovieService;
+import com.project.cinebloom.services.security.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,57 +18,35 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 @RequestMapping("/movies")
 public class MovieController {
     MovieService movieService;
-    CategoryRepository categoryRepo;
-    MovieRepository movieRepo;
-    UserRepository userRepo;
-    @Value("classpath:/static/images/default-movie.jpg")
-    private Resource defaultPosterImage;
+    CategoryService categoryService;
+    UserService userService;
 
 
     public MovieController(MovieService movieService,
-                           CategoryRepository categoryRepo,
-                           MovieRepository movieRepo,
-                           UserRepository userRepo) {
+                           CategoryService categoryService,
+                           UserService userService) {
         this.movieService = movieService;
-        this.categoryRepo = categoryRepo;
-        this.movieRepo = movieRepo;
-        this.userRepo = userRepo;
+        this.categoryService = categoryService;
+        this.userService = userService;
     }
 
 
     @GetMapping("/{id}/poster")
     public ResponseEntity<byte[]> getPoster(@PathVariable Long id) {
-        byte[] pic = movieRepo.findById(id)
-                .map(Movie::getPoster)
-                .filter(bytes -> bytes != null && bytes.length > 0)
-                .orElseGet(() -> {
-                    try {
-                        return Files.readAllBytes(defaultPosterImage.getFile().toPath());
-                    } catch (IOException e) {
-                        throw new RuntimeException("Failed to load default poster", e);
-                    }
-                });
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(pic);
+        byte[] pic = movieService.getPosterOrDefault(id);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(pic);
     }
 
 
@@ -98,7 +76,7 @@ public class MovieController {
         model.addAttribute("sort", sort);
         model.addAttribute("dir", dir);
         model.addAttribute("sortOption", sortOption);
-        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("categories", categoryService.findAll());
 
         return "moviesList";
     }
@@ -112,7 +90,7 @@ public class MovieController {
 
         User user = null;
         if (principal != null) {
-            user = userRepo.findByUsername(principal.getName())
+            user = userService.findByUsername(principal.getName())
                     .orElse(null);
         }
 
@@ -136,7 +114,7 @@ public class MovieController {
     @GetMapping("/new")
     public String addMovie(Model model) {
         model.addAttribute("movie", new MovieFormDTO());
-        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("categories", categoryService.findAll());
         return "movieForm";
     }
 
@@ -147,7 +125,7 @@ public class MovieController {
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("categories", categoryRepo.findAll());
+            model.addAttribute("categories", categoryService.findAll());
             return "movieForm";
         }
 
@@ -157,7 +135,7 @@ public class MovieController {
             return "redirect:/movies";
         } catch (Exception e) {
             model.addAttribute("errorMovie", e.getMessage());
-            model.addAttribute("categories", categoryRepo.findAll());
+            model.addAttribute("categories", categoryService.findAll());
             return "movieForm";
         }
     }
@@ -181,7 +159,7 @@ public class MovieController {
         try {
             MovieFormDTO dto = movieService.getMovieFormById(id);
             model.addAttribute("movie", dto);
-            model.addAttribute("categories", categoryRepo.findAll());
+            model.addAttribute("categories", categoryService.findAll());
             return "editMovie";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMovie", e.getMessage());
@@ -196,7 +174,7 @@ public class MovieController {
                               Model model,
                               RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            model.addAttribute("categories", categoryRepo.findAll());
+            model.addAttribute("categories", categoryService.findAll());
             return "editMovie";
         }
 
@@ -206,7 +184,7 @@ public class MovieController {
             return "redirect:/movies";
         } catch (Exception e) {
             model.addAttribute("errorMovie", e.getMessage());
-            model.addAttribute("categories", categoryRepo.findAll());
+            model.addAttribute("categories", categoryService.findAll());
             return "editMovie";
         }
     }

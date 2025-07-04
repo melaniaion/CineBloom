@@ -12,6 +12,8 @@ import com.project.cinebloom.mappers.MovieMapper;
 import com.project.cinebloom.repositories.CategoryRepository;
 import com.project.cinebloom.repositories.MovieRepository;
 import com.project.cinebloom.repositories.UserMovieRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +36,8 @@ public class MovieServiceImpl implements MovieService {
     private final MovieMapper movieMapper;
     private final CategoryRepository categoryRepo;
     private final UserMovieRepository userMovieRepo;
+    @Value("classpath:/static/images/default-movie.jpg")
+    private Resource defaultPosterImage;
 
     public MovieServiceImpl(MovieRepository movieRepo,
                             MovieMapper movieMapper,
@@ -42,6 +47,20 @@ public class MovieServiceImpl implements MovieService {
         this.movieMapper = movieMapper;
         this.categoryRepo = categoryRepo;
         this.userMovieRepo = userMovieRepo;
+    }
+
+    @Override
+    public byte[] getPosterOrDefault(Long id) {
+        return movieRepo.findById(id)
+                .map(Movie::getPoster)
+                .filter(p -> p != null && p.length > 0)
+                .orElseGet(() -> {
+                    try {
+                        return Files.readAllBytes(defaultPosterImage.getFile().toPath());
+                    } catch (IOException e) {
+                        throw new RuntimeException("Default poster missing", e);
+                    }
+                });
     }
 
     @Override
